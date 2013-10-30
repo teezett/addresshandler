@@ -1,6 +1,10 @@
 package name.bauhan.sven.tools.addresshandler;
 
 import au.com.bytecode.opencsv.CSVReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -9,6 +13,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hello world!
@@ -16,6 +22,8 @@ import org.apache.commons.cli.ParseException;
  */
 public class AddressHandler {
 
+	protected static final Logger logger = LoggerFactory.getLogger(AddressHandler.class);
+	
 	/**
 	 * Define the command line options.
 	 *
@@ -38,6 +46,15 @@ public class AddressHandler {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("addresshandler", defineOptions());
 			System.exit(0);
+		}
+		if (cmdline.hasOption("f")) {
+			String filename = cmdline.getOptionValue("f");
+			Path path = Paths.get(filename);
+			try {
+				String type = Files.probeContentType(path);
+				logger.info(type);
+			} catch (IOException ex) {
+			}
 		}
 	}
 
