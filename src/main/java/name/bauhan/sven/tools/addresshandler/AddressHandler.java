@@ -52,8 +52,9 @@ public class AddressHandler {
 			Path path = Paths.get(filename);
 			try {
 				String type = Files.probeContentType(path);
-				logger.info(type);
+				logger.info("Detected type: " + type);
 			} catch (IOException ex) {
+				logger.warn("Unable to get content type: " + ex.getLocalizedMessage());
 			}
 		}
 	}
@@ -66,7 +67,7 @@ public class AddressHandler {
 			start(line);
 		} catch (ParseException ex) {
 		}
-
+		logger.info("AddressHandler\n");
 		System.out.println("Hello World!");
 		CSVReader reader;
 	}
