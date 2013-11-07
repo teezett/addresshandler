@@ -48,6 +48,7 @@ public class AddressHandler {
 			System.exit(0);
 		}
 		if (cmdline.hasOption("f")) {
+			logger.info("found option -f");
 			String filename = cmdline.getOptionValue("f");
 			Path path = Paths.get(filename);
 			try {
@@ -66,8 +67,10 @@ public class AddressHandler {
 			CommandLine line = parser.parse(defineOptions(), args);
 			start(line);
 		} catch (ParseException ex) {
+			logger.error("Parse Error: " + ex.getLocalizedMessage());
+			System.exit(1);
 		}
-		logger.info("AddressHandler\n");
+		logger.info("AddressHandler");
 		System.out.println("Hello World!");
 		CSVReader reader;
 	}
