@@ -1,0 +1,26 @@
+#This is an example, what an csv file should look like
+
+# As you might have guessed, empty lines, or lines starting with a hash mark
+# are ignored
+
+# This here is a confline (you can have multiple of these in one file). A
+# confline is an @sv line (well, the comma is already in use ;-) ). The
+# first entry is the name of the key attribute, the next one is the 
+# containername, all following ones will resolve into objectclasses.
+@uid@dc=mymorg, dc=com@top@person@posixAccount
+
+# The next line is the about line, I think you can guess, what it is
+# needed for.
+"uid","userPassword","homeDirectory","uidNumber","gidNumber","cn","description","loginShell"
+
+# Finally, the real data:
+# patrick, a normal user (note the linebreak in the description field)
+"patrick","{CRYPT}foobar","/home/patrick","500","100","Patrick Ahlbrecht","El
+programmer","/bin/bash"
+
+# root has some empty values
+"root","GueZTh1z","/root","0","0",,,"/bin/sh"
+
+# And here is one entry, having more fields than permitted.
+
+"nobody","x",,,,,,,,,,,"surplus field","me too","me three"

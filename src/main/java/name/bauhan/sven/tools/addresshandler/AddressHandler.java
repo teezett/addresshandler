@@ -1,10 +1,12 @@
 package name.bauhan.sven.tools.addresshandler;
 
 import au.com.bytecode.opencsv.CSVReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.util.List;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -54,6 +56,15 @@ public class AddressHandler {
 			try {
 				String type = Files.probeContentType(path);
 				logger.info("Detected type: " + type);
+				FileReader freader = new FileReader(filename);
+				CSVReader reader = new CSVReader(freader);
+				List<?> lines = reader.readAll();
+				logger.info("Read " + lines.size() + " number of lines");
+				String[] first = (String[]) lines.get(0);
+				for (int i = 0; i < first.length; i++) {
+					System.out.print("cell " + i + ": ");
+					System.out.println(first[i]);
+				}
 			} catch (IOException ex) {
 				logger.warn("Unable to get content type: " + ex.getLocalizedMessage());
 			}
@@ -70,8 +81,7 @@ public class AddressHandler {
 			logger.error("Parse Error: " + ex.getLocalizedMessage());
 			System.exit(1);
 		}
-		logger.info("AddressHandler");
-		System.out.println("Hello World!");
-		CSVReader reader;
+//		logger.info("AddressHandler");
+//		System.out.println("Hello World!");
 	}
 }
