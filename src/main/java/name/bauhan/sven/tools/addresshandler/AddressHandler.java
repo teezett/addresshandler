@@ -1,12 +1,12 @@
 package name.bauhan.sven.tools.addresshandler;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.csvreader.CsvReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.util.List;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -15,6 +15,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.csv.CSVParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,15 +57,19 @@ public class AddressHandler {
 			try {
 				String type = Files.probeContentType(path);
 				logger.info("Detected type: " + type);
-				FileReader freader = new FileReader(filename);
-				CSVReader reader = new CSVReader(freader);
-				List<?> lines = reader.readAll();
-				logger.info("Read " + lines.size() + " number of lines");
-				String[] first = (String[]) lines.get(0);
-				for (int i = 0; i < first.length; i++) {
-					System.out.print("cell " + i + ": ");
-					System.out.println(first[i]);
+				CsvReader reader = new CsvReader(filename);
+				reader.readHeaders();
+				while (reader.readRecord()) {
+					String uid = reader.get("uid");
+					logger.info("Found product number " + uid);
 				}
+				logger.info("Got header with " + reader.getHeaderCount() + " header");
+//				FileReader freader = new FileReader(filename);
+//				CSVParser parser = new CSVParser(freader);
+//				String[][] entries = parser.getAllValues();
+//				logger.info("Read " + entries.length + " number of lines");
+			} catch (FileNotFoundException ex) {
+				logger.warn("File not found: " + ex.getLocalizedMessage());
 			} catch (IOException ex) {
 				logger.warn("Unable to get content type: " + ex.getLocalizedMessage());
 			}

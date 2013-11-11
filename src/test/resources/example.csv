@@ -1,3 +1,4 @@
+"uid","userPassword","homeDirectory","uidNumber","gidNumber","cn","description","loginShell"
 #This is an example, what an csv file should look like
 
 # As you might have guessed, empty lines, or lines starting with a hash mark
@@ -11,7 +12,6 @@
 
 # The next line is the about line, I think you can guess, what it is
 # needed for.
-"uid","userPassword","homeDirectory","uidNumber","gidNumber","cn","description","loginShell"
 
 # Finally, the real data:
 # patrick, a normal user (note the linebreak in the description field)
