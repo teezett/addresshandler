@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.util.logging.Level;
+import java.util.List;
 import java.util.regex.Pattern;
 import jxl.Cell;
 import jxl.Sheet;
@@ -21,6 +21,9 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
+import org.apache.directory.api.ldap.model.ldif.LdapLdifException;
+import org.apache.directory.api.ldap.model.ldif.LdifEntry;
+import org.apache.directory.api.ldap.model.ldif.LdifReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +71,19 @@ public class AddressHandler {
 		}
 	}
 
+	protected static void readLdif(String filename) {
+		LdifReader reader = new LdifReader();
+		try {
+			List<LdifEntry> entries = reader.parseLdifFile(filename);
+			for (LdifEntry entry : entries) {
+				String name = entry.getDn().getName();
+				logger.info("Name: " + name);
+			}
+		} catch (LdapLdifException ex) {
+			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
+		}
+	}
+
 	protected static void readExcel(String filename) {
 		try {
 			Workbook workbook = Workbook.getWorkbook(new File(filename));
@@ -81,14 +97,17 @@ public class AddressHandler {
 			logger.warn("Biff exception: " + ex.getLocalizedMessage());
 		}
 	}
-	
+
 	protected static void readFile(String filename) {
 		final Pattern csvExt = Pattern.compile(".*[.][cC][sS][vV]");
 		final Pattern xlsExt = Pattern.compile(".*[.][xX][lL][sS]");
+		final Pattern ldifExt = Pattern.compile(".*[.][lL][dD][iI][fF]");
 		if (csvExt.matcher(filename).matches()) {
 			readCSV(filename);
-		} else if( xlsExt.matcher(filename).matches()) {
+		} else if (xlsExt.matcher(filename).matches()) {
 			readExcel(filename);
+		} else if (ldifExt.matcher(filename).matches()) {
+			readLdif(filename);
 		} else {
 			logger.warn("Unrecognized file extension");
 		}
@@ -117,7 +136,5 @@ public class AddressHandler {
 			logger.error("Parse Error: " + ex.getLocalizedMessage());
 			System.exit(1);
 		}
-//		logger.info("AddressHandler");
-//		System.out.println("Hello World!");
 	}
 }
