@@ -40,8 +40,10 @@ public class AddressFileTest {
 	@Test
 	public void testCreate() {
 		String filename = "sample.xls";
-		ExcelAddresses result = (ExcelAddresses) AddressFile.create(filename);
-		assertThat(result, isA(ExcelAddresses.class));
+		ExcelAddresses xlsAddr = (ExcelAddresses) AddressFile.create(filename);
+		LDIFAdresses ldifAddr = (LDIFAdresses) AddressFile.create("sample.ldif");
+		assertThat(xlsAddr, isA(ExcelAddresses.class));
+		assertThat(ldifAddr, isA(LDIFAdresses.class));
 	}
 
 	/**

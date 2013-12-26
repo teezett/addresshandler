@@ -7,12 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.apache.directory.api.ldap.model.ldif.LdapLdifException;
-import org.apache.directory.api.ldap.model.ldif.LdifEntry;
-import org.apache.directory.api.ldap.model.ldif.LdifReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +44,9 @@ abstract public class AddressFile {
 		if (ExcelAddresses.file_pattern().matcher(filename).matches()) {
 			logger.info("Identified Excel file");
 			return new ExcelAddresses(filename);
+		} else if (LDIFAdresses.file_pattern().matcher(filename).matches()) {
+			logger.info("Identified LDIF file");
+			return new LDIFAdresses(filename);
 		}
 		logger.warn("Unrecognized file type");
 		return null;
@@ -108,16 +107,16 @@ abstract public class AddressFile {
 //	}
 
 	protected static void readLdif(String filename) {
-		LdifReader reader = new LdifReader();
-		try {
-			List<LdifEntry> entries = reader.parseLdifFile(filename);
-			for (LdifEntry entry : entries) {
-				String name = entry.getDn().getName();
-				AddressHandler.logger.info("Name: " + name);
-			}
-		} catch (LdapLdifException ex) {
-			AddressHandler.logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
-		}
+//		LdifReader reader = new LdifReader();
+//		try {
+//			List<LdifEntry> entries = reader.parseLdifFile(filename);
+//			for (LdifEntry entry : entries) {
+//				String name = entry.getDn().getName();
+//				AddressHandler.logger.info("Name: " + name);
+//			}
+//		} catch (LdapLdifException ex) {
+//			AddressHandler.logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
+//		}
 	}
 	
 }
