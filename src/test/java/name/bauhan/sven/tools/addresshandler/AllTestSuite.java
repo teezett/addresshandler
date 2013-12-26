@@ -10,4 +10,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(WildcardPatternSuite.class)
 @SuiteClasses("**/*Test.class")
-public class AllTestSuite {}
+public class AllTestSuite {
+	public static void assertNoExceptionThrown() {}
+}

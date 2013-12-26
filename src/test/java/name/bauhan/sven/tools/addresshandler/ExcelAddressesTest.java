@@ -1,17 +1,20 @@
 package name.bauhan.sven.tools.addresshandler;
 
-import java.util.regex.Pattern;
+import java.net.URL;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import static name.bauhan.sven.tools.addresshandler.AllTestSuite.assertNoExceptionThrown;
 
 /**
- *
+ * Testing class ExcelAddresses.
  * @author Sven
  */
 public class ExcelAddressesTest {
+
+	private final static Logger logger = LoggerFactory.getLogger(ExcelAddressesTest.class);
 	
 	/**
 	 * Test of file_pattern method, of class ExcelAddresses.
@@ -19,24 +22,21 @@ public class ExcelAddressesTest {
 	@Test
 	@Ignore("Creation is tested in factory method")
 	public void testFile_pattern() {
-		System.out.println("file_pattern");
-		Pattern expResult = null;
-		Pattern result = ExcelAddresses.file_pattern();
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		fail("The test case is a prototype.");
 	}
 
 	/**
 	 * Test of readFile method, of class ExcelAddresses.
 	 */
 	@Test
-	@Category(NotImplementedTests.class)
+//	@Category(NotImplementedTests.class)
 	public void testReadFile() {
-		System.out.println("readFile");
-		ExcelAddresses instance = (ExcelAddresses) AddressFile.create("test.xls");
+		// Arrange
+		URL url = this.getClass().getResource("/sample.xls");
+		logger.info("Reading file '" + url.getFile() + "' from path " + url.getPath());
+		ExcelAddresses instance = (ExcelAddresses) AddressFile.create(url.getPath());
+		// Act
 		instance.readFile();
-		// TODO review the generated test code and remove the default call to fail.
-//		fail("The test case is a prototype.");
+		// Assert
+		assertNoExceptionThrown();
 	}
 }

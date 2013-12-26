@@ -41,7 +41,6 @@ public class AddressFileTest {
 	public void testCreate() {
 		String filename = "sample.xls";
 		ExcelAddresses result = (ExcelAddresses) AddressFile.create(filename);
-//		AddressFile result = AddressFile.create(filename);
 		assertThat(result, isA(ExcelAddresses.class));
 	}
 
@@ -54,32 +53,6 @@ public class AddressFileTest {
 		System.out.println("readFile");
 		AddressFile instance = null;
 		instance.readFile();
-		// TODO review the generated test code and remove the default call to fail.
-//		fail("The test case is a prototype.");
-	}
-
-	/**
-	 * Test of readCSV method, of class AddressFile.
-	 */
-	@Test
-	@Ignore("Test in derived class")
-	public void testReadCSV() {
-		System.out.println("readCSV");
-		String filename = "";
-		AddressFile.readCSV(filename);
-		// TODO review the generated test code and remove the default call to fail.
-//		fail("The test case is a prototype.");
-	}
-
-	/**
-	 * Test of readLdif method, of class AddressFile.
-	 */
-	@Test
-	@Ignore("Test in derived class")
-	public void testReadLdif() {
-		System.out.println("readLdif");
-		String filename = "";
-		AddressFile.readLdif(filename);
 		// TODO review the generated test code and remove the default call to fail.
 //		fail("The test case is a prototype.");
 	}
