@@ -21,6 +21,9 @@ public class LDIFAdresses extends AddressFile {
 		return xlsExt;
 	}
 
+	/**
+	 * Reading an LDIF file.
+	 */
 	@Override
 	protected void readFile() {
 		LdifReader reader = new LdifReader();
