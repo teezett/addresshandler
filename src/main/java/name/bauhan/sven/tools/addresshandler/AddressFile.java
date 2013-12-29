@@ -47,6 +47,9 @@ abstract public class AddressFile {
 		} else if (LDIFAdresses.file_pattern().matcher(filename).matches()) {
 			logger.info("Identified LDIF file");
 			return new LDIFAdresses(filename);
+		} else if (VCardAdresses.file_pattern().matcher(filename).matches()) {
+			logger.info("Identified vCard file");
+			return new VCardAdresses(filename);
 		}
 		logger.warn("Unrecognized file type");
 		return null;

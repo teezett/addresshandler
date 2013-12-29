@@ -42,8 +42,12 @@ public class AddressFileTest {
 		String filename = "sample.xls";
 		ExcelAddresses xlsAddr = (ExcelAddresses) AddressFile.create(filename);
 		LDIFAdresses ldifAddr = (LDIFAdresses) AddressFile.create("sample.ldif");
+		VCardAdresses vcfAddr = (VCardAdresses) AddressFile.create("sample.vcf");
+		VCardAdresses vcardAddr = (VCardAdresses) AddressFile.create("sample.vcard");
 		assertThat(xlsAddr, isA(ExcelAddresses.class));
 		assertThat(ldifAddr, isA(LDIFAdresses.class));
+		assertThat(vcfAddr, isA(VCardAdresses.class));
+		assertThat(vcardAddr, isA(VCardAdresses.class));
 	}
 
 	/**
