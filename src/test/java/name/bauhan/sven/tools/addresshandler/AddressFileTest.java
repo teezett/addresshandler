@@ -15,6 +15,9 @@ import org.junit.Ignore;
  */
 public class AddressFileTest {
 	
+//	@Rule
+//	ExpectException expected = ExpectException;
+	
 	public AddressFileTest() {
 	}
 	
@@ -56,20 +59,15 @@ public class AddressFileTest {
 	@Test
 	@Ignore("Testing derived methods")
 	public void testReadFile() {
-		System.out.println("readFile");
-		AddressFile instance = null;
-		instance.readFile();
-		// TODO review the generated test code and remove the default call to fail.
-//		fail("The test case is a prototype.");
 	}
 
-	public class AddressFileImpl extends AddressFile {
-
-		public AddressFileImpl() {
-			super("");
-		}
-
-		public void readFile() {
-		}
-	}
+//	public class AddressFileImpl extends AddressFile {
+//
+//		public AddressFileImpl() {
+//			super("");
+//		}
+//
+//		public void readFile() {
+//		}
+//	}
 }

@@ -13,12 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Base class for different address data types.
  * @author Sven
  */
 abstract public class AddressFile {
 	
-	protected static final Logger logger = LoggerFactory.getLogger(AddressFile.class);
+	private static final Logger logger = LoggerFactory.getLogger(AddressFile.class);
 
 	protected String file_name;
 	private static final Map<Pattern, Class> types = new HashMap<Pattern, Class>();
@@ -26,6 +26,12 @@ abstract public class AddressFile {
 		types.put(ExcelAddresses.file_pattern(), ExcelAddresses.class);
 	}
 	
+	/**
+	 * Factory method to create a derived object.
+	 * 
+	 * @param filename detection of data type according to filename extension
+	 * @return  object of derived class
+	 */
 	public static AddressFile create(String filename) {
 //		for (Map.Entry<Pattern,Class> entry : types.entrySet()) {
 //			if (entry.getKey().matcher(filename).matches()) {
@@ -59,23 +65,7 @@ abstract public class AddressFile {
 		file_name = filename;
 	}
 
-//	abstract protected Pattern file_pattern();
-	
 	abstract protected void readFile();
-//	protected void readFile() {
-//		final Pattern csvExt = Pattern.compile(".*[.][cC][sS][vV]");
-//		final Pattern xlsExt = Pattern.compile(".*[.][xX][lL][sS]");
-//		final Pattern ldifExt = Pattern.compile(".*[.][lL][dD][iI][fF]");
-//		if (csvExt.matcher(file_name).matches()) {
-//			readCSV(file_name);
-//		} else if (xlsExt.matcher(file_name).matches()) {
-//			readExcel(file_name);
-//		} else if (ldifExt.matcher(file_name).matches()) {
-//			readLdif(file_name);
-//		} else {
-//			AddressHandler.logger.warn("Unrecognized file extension");
-//		}
-//	}
 
 	protected static void readCSV(String filename) {
 		Path path = Paths.get(filename);
@@ -94,20 +84,6 @@ abstract public class AddressFile {
 			AddressHandler.logger.warn("Unable to get content type: " + ex.getLocalizedMessage());
 		}
 	}
-
-//	protected static void readExcel(String filename) {
-//		try {
-//			Workbook workbook = Workbook.getWorkbook(new File(filename));
-//			Sheet sheet = workbook.getSheet(0);
-//			Cell a1 = sheet.getCell(0, 0);
-//			String cell_a1 = a1.getContents();
-//			AddressHandler.logger.info("Excel file, cell A1: " + cell_a1);
-//		} catch (IOException ex) {
-//			AddressHandler.logger.warn("Unable to open file: " + ex.getLocalizedMessage());
-//		} catch (BiffException ex) {
-//			AddressHandler.logger.warn("Biff exception: " + ex.getLocalizedMessage());
-//		}
-//	}
 
 	protected static void readLdif(String filename) {
 //		LdifReader reader = new LdifReader();

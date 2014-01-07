@@ -3,7 +3,6 @@ package name.bauhan.sven.tools.addresshandler;
 import java.net.URL;
 import static name.bauhan.sven.tools.addresshandler.AllTestSuite.assertNoExceptionThrown;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -32,7 +31,7 @@ public class VCardAdressesTest {
 	 * Test of readFile method, of class VCardAdresses.
 	 */
 	@Test
-	@Category(NotImplementedTests.class)
+//	@Category(NotImplementedTests.class)
 	public void testReadFile() {
 		// Arrange
 		URL url = this.getClass().getResource("/simple.vcf");

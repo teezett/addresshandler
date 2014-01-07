@@ -1,6 +1,13 @@
 package name.bauhan.sven.tools.addresshandler;
 
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handle vCard address files.
@@ -8,8 +15,11 @@ import java.util.regex.Pattern;
  */
 public class VCardAdresses extends AddressFile {
 
+	private final Logger logger;
+
 	public VCardAdresses(String filename) {
 		super(filename);
+		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 
 	static protected Pattern file_pattern() {
@@ -22,7 +32,13 @@ public class VCardAdresses extends AddressFile {
 	 */
 	@Override
 	protected void readFile() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		VCard vcard;
+		try {
+			vcard = Ezvcard.parse(new File(file_name)).first();
+			logger.info("Found vcard entry with name " + vcard.getFormattedName().getValue());
+		} catch (IOException ex) {
+			logger.warn("IOException: " + ex.getLocalizedMessage());
+		}
 	}
 	
 }
