@@ -8,6 +8,8 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 /**
  *
@@ -15,8 +17,8 @@ import org.junit.Ignore;
  */
 public class AddressFileTest {
 	
-//	@Rule
-//	ExpectException expected = ExpectException;
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
 	
 	public AddressFileTest() {
 	}
@@ -54,6 +56,16 @@ public class AddressFileTest {
 	}
 
 	/**
+	 * Test exception handling of factory method.
+	 */
+	@Test
+	public void test_that_exception_is_thrown_when_file_extension_is_unrecognized() {
+		expected.expect(IllegalArgumentException.class);
+		expected.expectMessage("unrecognized type");
+		AddressFile addrFile = AddressFile.create("empty.txt");
+	}
+	
+	/**
 	 * Test of readFile method, of class AddressFile.
 	 */
 	@Test
@@ -61,13 +73,4 @@ public class AddressFileTest {
 	public void testReadFile() {
 	}
 
-//	public class AddressFileImpl extends AddressFile {
-//
-//		public AddressFileImpl() {
-//			super("");
-//		}
-//
-//		public void readFile() {
-//		}
-//	}
 }

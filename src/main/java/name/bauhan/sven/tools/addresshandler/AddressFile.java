@@ -57,8 +57,9 @@ abstract public class AddressFile {
 			logger.info("Identified vCard file");
 			return new VCardAdresses(filename);
 		}
-		logger.warn("Unrecognized file type");
-		return null;
+		throw new IllegalArgumentException("Unknown file extension: unrecognized type");
+//		logger.warn("Unrecognized file type");
+//		return null;
 	}
 
 	protected AddressFile(String filename) {
