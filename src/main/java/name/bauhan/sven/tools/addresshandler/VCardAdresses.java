@@ -4,7 +4,7 @@ import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
+import java.util.List;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +32,18 @@ public class VCardAdresses extends AddressFile {
 	 */
 	@Override
 	protected void readFile() {
-		VCard vcard;
 		try {
-			vcard = Ezvcard.parse(new File(file_name)).first();
-			logger.info("Found vcard entry with name " + vcard.getFormattedName().getValue());
+			List<VCard> addresses = Ezvcard.parse(new File(file_name)).all();
+			setAdresses(addresses);
+			logger.debug("Found vcard file with " + addresses.size() + " entries");
 		} catch (IOException ex) {
 			logger.warn("IOException: " + ex.getLocalizedMessage());
 		}
+	}
+
+	@Override
+	public void writeFile() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	
 }

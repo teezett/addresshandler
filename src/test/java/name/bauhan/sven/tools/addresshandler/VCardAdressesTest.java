@@ -1,12 +1,15 @@
 package name.bauhan.sven.tools.addresshandler;
 
 import java.net.URL;
+import java.util.List;
 import static name.bauhan.sven.tools.addresshandler.AllTestSuite.assertNoExceptionThrown;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ezvcard.VCard;
 
 /**
  *
@@ -39,7 +42,12 @@ public class VCardAdressesTest {
 		VCardAdresses instance = (VCardAdresses) AddressFile.create(url.getPath());
 		// Act
 		instance.readFile();
+		List<VCard> adresses = instance.getAdresses();
+		VCard vCard = adresses.get(0);
 		// Assert
 		assertNoExceptionThrown();
+		assertThat("At least one address should be read", adresses, is(notNullValue()));
+		assertThat("The one address should be read from file", adresses.size(), is(1));
+		assertThat("The found addresses name is Forrest Gump", vCard.getFormattedName().getValue(), is("Forrest Gump"));
 	}
 }

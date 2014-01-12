@@ -37,5 +37,10 @@ public class LDIFAdresses extends AddressFile {
 			AddressHandler.logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
 		}
 	}
+
+	@Override
+	public void writeFile() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 	
 }

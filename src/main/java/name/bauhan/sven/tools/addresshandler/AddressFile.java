@@ -7,10 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ezvcard.VCard;
 
 /**
  * Base class for different address data types.
@@ -20,6 +22,8 @@ abstract public class AddressFile {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AddressFile.class);
 
+	protected List<VCard> addresses = null;
+	
 	protected String file_name;
 	private static final Map<Pattern, Class> types = new HashMap<Pattern, Class>();
 	static {
@@ -67,6 +71,8 @@ abstract public class AddressFile {
 	}
 
 	abstract protected void readFile();
+	
+	abstract public void writeFile();
 
 	protected static void readCSV(String filename) {
 		Path path = Paths.get(filename);
@@ -97,6 +103,20 @@ abstract public class AddressFile {
 //		} catch (LdapLdifException ex) {
 //			AddressHandler.logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
 //		}
+	}
+
+	/**
+	 * @return the adresses
+	 */
+	public List<VCard> getAdresses() {
+		return addresses;
+	}
+
+	/**
+	 * @param adresses the adresses to set
+	 */
+	public void setAdresses(List<VCard> adresses) {
+		this.addresses = adresses;
 	}
 	
 }

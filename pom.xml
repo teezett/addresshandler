@@ -59,6 +59,13 @@
 			<version>0.9.1</version>
 		</dependency>
 
+		<!-- Utils -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.0</version>
+		</dependency>
+
 		<!--	Unit testing	-->
 		<dependency>
 			<groupId>junit</groupId>
