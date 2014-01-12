@@ -20,6 +20,12 @@ import ezvcard.VCard;
  */
 abstract public class AddressFile {
 	
+	public enum Formats {
+		VCARD,
+		LDIF,
+		EXCEL;
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(AddressFile.class);
 
 	protected List<VCard> addresses = null;

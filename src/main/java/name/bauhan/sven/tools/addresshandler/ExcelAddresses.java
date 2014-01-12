@@ -28,6 +28,36 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ExcelAddresses extends AddressFile {
 
+	enum Fields {
+
+		PREFIX("Titel", 0),
+		GIVEN_NAME("Vorname", 1),
+		FAMILY_NAME("Nachname", 2),
+		HOME_PHONE("Festnetz", 3),
+		CELL_PHONE("Mobil", 4),
+		EMAIL("Email", 5);
+		private String title;
+		private int index;
+
+		Fields(String name, int count) {
+			title = name;
+			index = count;
+		}
+
+		/**
+		 * @return the title
+		 */
+		public String getTitle() {
+			return title;
+		}
+
+		/**
+		 * @return the index
+		 */
+		public int getIndex() {
+			return index;
+		}
+	}
 	private final static Logger logger = LoggerFactory.getLogger(ExcelAddresses.class);
 	final public static Pattern pattern = Pattern.compile(".*[.][xX][lL][sS]");
 
@@ -58,18 +88,10 @@ public class ExcelAddresses extends AddressFile {
 	private WritableSheet create_sheet_with_header(WritableWorkbook book) {
 		WritableSheet sheet = book.createSheet("Addresses", 0);
 		try {
-			Label label = new Label(0, 0, "Prefix");
-			sheet.addCell(label);
-			label = new Label(1, 0, "Vorname");
-			sheet.addCell(label);
-			label = new Label(2, 0, "Nachname");
-			sheet.addCell(label);
-			label = new Label(3, 0, "Festnetz");
-			sheet.addCell(label);
-			label = new Label(4, 0, "Mobil");
-			sheet.addCell(label);
-			label = new Label(5, 0, "Email");
-			sheet.addCell(label);
+			for (Fields field : Fields.values()) {
+				Label label = new Label(field.getIndex(), 0, field.getTitle());
+				sheet.addCell(label);
+			}
 		} catch (WriteException ex) {
 		}
 		return sheet;
@@ -77,24 +99,24 @@ public class ExcelAddresses extends AddressFile {
 
 	private void write_addresses_to_sheet(WritableSheet sheet) {
 		int row = 0;
-		for(VCard vCard: getAdresses()) {
+		for (VCard vCard : getAdresses()) {
 			try {
 				row = row + 1;
 				StructuredName name = vCard.getStructuredName();
 				List<String> prefixes = name.getPrefixes();
-				Label prefix = new Label(0, row, StringUtils.join(prefixes, " "));
+				Label prefix = new Label(Fields.PREFIX.getIndex(), row, StringUtils.join(prefixes, " "));
 				sheet.addCell(prefix);
-				Label given_name = new Label(1, row, name.getGiven());
+				Label given_name = new Label(Fields.GIVEN_NAME.getIndex(), row, name.getGiven());
 				sheet.addCell(given_name);
-				Label family = new Label(2, row, name.getFamily());
+				Label family = new Label(Fields.FAMILY_NAME.getIndex(), row, name.getFamily());
 				sheet.addCell(family);
 				List<Telephone> tel_numbers = vCard.getTelephoneNumbers();
 				for (Telephone tel : tel_numbers) {
 					if (tel.getTypes().contains(TelephoneType.HOME)) {
-						Label phone = new Label(3, row, tel.getText());
+						Label phone = new Label(Fields.HOME_PHONE.getIndex(), row, tel.getText());
 						sheet.addCell(phone);
 					} else if (tel.getTypes().contains(TelephoneType.CELL)) {
-						Label phone = new Label(4, row, tel.getText());
+						Label phone = new Label(Fields.CELL_PHONE.getIndex(), row, tel.getText());
 						sheet.addCell(phone);
 					}
 				}
@@ -103,13 +125,14 @@ public class ExcelAddresses extends AddressFile {
 				for (Email email : email_addresses) {
 					email_strings.add(email.getValue());
 				}
-				Label emails = new Label(5, row, StringUtils.join(email_strings, "\n"));
+				Label emails = new Label(Fields.EMAIL.getIndex(), row, StringUtils.join(email_strings, "\n"));
 				sheet.addCell(emails);
 			} catch (WriteException ex) {
+				logger.warn("Writing addresse to cells: " + ex.getLocalizedMessage());
 			}
 		}
 	}
-	
+
 	@Override
 	public void writeFile() {
 		try {
@@ -123,6 +146,5 @@ public class ExcelAddresses extends AddressFile {
 		} catch (WriteException ex) {
 			logger.warn("Writing excel cell: " + ex.getLocalizedMessage());
 		}
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
