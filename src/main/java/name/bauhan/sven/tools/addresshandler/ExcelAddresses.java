@@ -18,8 +18,11 @@ import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Email;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -38,6 +41,14 @@ public class ExcelAddresses extends AddressFile {
 		EMAIL("Email", 5);
 		private String title;
 		private int index;
+		/** Mapping from field title to enum value. */
+		public static final Map<String, Fields> TITLE2FIELD = new HashMap<String, Fields>();
+
+		static {
+			for (Fields field : Fields.values()) {
+				TITLE2FIELD.put(field.getTitle(), field);
+			}
+		}
 
 		Fields(String name, int count) {
 			title = name;
@@ -58,9 +69,18 @@ public class ExcelAddresses extends AddressFile {
 			return index;
 		}
 	}
-	private final static Logger logger = LoggerFactory.getLogger(ExcelAddresses.class);
+	/**
+	 * Logger instance
+	 */
+	private static transient final Logger logger =
+					LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	/**
+	 * Name of sheet with addresses
+	 */
+	final private static String SHEET_NAME = "Addresses";
 	final public static Pattern pattern = Pattern.compile(".*[.][xX][lL][sS]");
-
+	private Map<Fields, Integer> field2column;
+	
 	ExcelAddresses(String filename) {
 		super(filename);
 	}
@@ -70,14 +90,82 @@ public class ExcelAddresses extends AddressFile {
 		return xlsExt;
 	}
 
+	/**
+	 * Identify which fields are in the different columns.
+	 * 
+	 * @param sheet_  excel sheet
+	 * @return  mapping, in which column which address field is stored
+	 */
+	private Map<Fields, Integer> identifyColumns(Sheet sheet_) {
+		field2column = new EnumMap<Fields, Integer>(Fields.class);
+		Cell[] headers = sheet_.getRow(0);
+		for (int i = 0; i < headers.length; i++) {
+			logger.debug("Searching title " + headers[i].getContents() + " in fields");
+			Fields field = Fields.TITLE2FIELD.get(headers[i].getContents());
+			if (field != null) {
+				logger.debug("Found field " + field.getTitle() + " in column " + i);
+				field2column.put(field, i);
+			}
+		}
+		return field2column;
+	}
+
+	/**
+	 * Read one row of cells and convert to VCard.
+	 * 
+	 * @param cells  row of cells
+	 * @return  generated VCard
+	 */
+	private VCard readAddress(Cell[] cells) {
+		VCard address = new VCard();
+		Integer col;
+		StructuredName name = new StructuredName();
+		col = field2column.get(Fields.PREFIX);
+		if ( col != null ) {
+			name.addPrefix(cells[col].getContents());
+		}
+		col = field2column.get(Fields.GIVEN_NAME);
+		if ( col != null ) {
+			name.setGiven(cells[col].getContents());
+		}
+		col = field2column.get(Fields.FAMILY_NAME);
+		if ( col != null ) {
+			name.setFamily(cells[col].getContents());
+		}
+		address.setStructuredName(name);
+		col = field2column.get(Fields.HOME_PHONE);
+		if ( col != null ) {
+			address.addTelephoneNumber(cells[col].getContents(), TelephoneType.HOME);
+		}
+		col = field2column.get(Fields.CELL_PHONE);
+		if ( col != null ) {
+			address.addTelephoneNumber(cells[col].getContents(), TelephoneType.CELL);
+		}
+		col = field2column.get(Fields.EMAIL);
+		if ( col != null ) {
+			String email = cells[col].getContents();
+			address.addEmail(email);
+		}
+		return address;
+	}
+	
 	@Override
 	protected void readFile() {
 		try {
 			Workbook workbook = Workbook.getWorkbook(new File(file_name));
+//			Sheet sheet = workbook.getSheet(SHEET_NAME);
 			Sheet sheet = workbook.getSheet(0);
-			Cell a1 = sheet.getCell(0, 0);
-			String cell_a1 = a1.getContents();
-			AddressHandler.logger.info("Excel file, cell A1: " + cell_a1);
+			identifyColumns(sheet);
+			logger.info("Found excel sheet with " + sheet.getRows() + " rows");
+			addresses = new LinkedList<VCard>();
+			for ( int i = 1; i < sheet.getRows(); i++ ) {
+				Cell[] cells = sheet.getRow(i);
+				VCard address = readAddress(cells);
+				addresses.add(address);
+			}
+//			Cell a1 = sheet.getCell(0, 0);
+//			String cell_a1 = a1.getContents();
+//			AddressHandler.logger.info("Excel file, cell A1: " + cell_a1);
 		} catch (IOException ex) {
 			AddressHandler.logger.warn("Unable to open file: " + ex.getLocalizedMessage());
 		} catch (BiffException ex) {
@@ -86,7 +174,7 @@ public class ExcelAddresses extends AddressFile {
 	}
 
 	private WritableSheet create_sheet_with_header(WritableWorkbook book) {
-		WritableSheet sheet = book.createSheet("Addresses", 0);
+		WritableSheet sheet = book.createSheet(SHEET_NAME, 0);
 		try {
 			for (Fields field : Fields.values()) {
 				Label label = new Label(field.getIndex(), 0, field.getTitle());

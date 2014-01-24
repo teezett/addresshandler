@@ -13,7 +13,6 @@ import ezvcard.parameter.EmailType;
 import ezvcard.parameter.TelephoneType;
 import ezvcard.property.FormattedName;
 import ezvcard.property.StructuredName;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -39,7 +38,7 @@ public class ExcelAddressesTest {
 //	@Category(NotImplementedTests.class)
 	public void testReadFile() {
 		// Arrange
-		URL url = this.getClass().getResource("/sample.xls");
+		URL url = this.getClass().getResource("/simple.xls");
 		logger.info("Reading file '" + url.getFile() + "' from path " + url.getPath());
 		ExcelAddresses instance = (ExcelAddresses) AddressFile.create(url.getPath());
 		// Act

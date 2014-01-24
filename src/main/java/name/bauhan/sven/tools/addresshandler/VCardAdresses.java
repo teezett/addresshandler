@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +16,14 @@ import org.slf4j.LoggerFactory;
  */
 public class VCardAdresses extends AddressFile {
 
-	private final Logger logger;
+	/**
+	 * Logger instance
+	 */
+	private static transient final Logger logger =
+					LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
 	public VCardAdresses(String filename) {
 		super(filename);
-		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 
 	static protected Pattern file_pattern() {
@@ -33,9 +37,9 @@ public class VCardAdresses extends AddressFile {
 	@Override
 	protected void readFile() {
 		try {
-			List<VCard> addresses = Ezvcard.parse(new File(file_name)).all();
-			setAdresses(addresses);
-			logger.debug("Found vcard file with " + addresses.size() + " entries");
+			List<VCard> addr = Ezvcard.parse(new File(file_name)).all();
+			setAdresses(addr);
+			logger.debug("Found vcard file with " + addr.size() + " entries");
 		} catch (IOException ex) {
 			logger.warn("IOException: " + ex.getLocalizedMessage());
 		}
@@ -43,7 +47,13 @@ public class VCardAdresses extends AddressFile {
 
 	@Override
 	public void writeFile() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		String content = Ezvcard.write(getAdresses()).go();
+		File file = new File(file_name);
+		try {
+			FileUtils.writeStringToFile(file, content);
+		} catch (IOException ex) {
+			logger.error("Writing file: " + ex.getLocalizedMessage());
+		}
 	}
 	
 }

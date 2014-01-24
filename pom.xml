@@ -109,7 +109,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.16</version>
 				<configuration>
-					<!--					<forkCount>2.5C</forkCount>-->
 					<threadCount>2</threadCount>
 					<parallel>both</parallel>
 					<runOrder>balanced</runOrder>

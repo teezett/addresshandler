@@ -16,31 +16,33 @@ import ezvcard.VCard;
 
 /**
  * Base class for different address data types.
+ *
  * @author Sven
  */
 abstract public class AddressFile {
-	
+
 	public enum Formats {
+
 		VCARD,
 		LDIF,
 		EXCEL;
 	}
-	
-	private static final Logger logger = LoggerFactory.getLogger(AddressFile.class);
-
+	/** Logger instance */
+	private static transient final Logger logger =
+					LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	protected List<VCard> addresses = null;
-	
 	protected String file_name;
 	private static final Map<Pattern, Class> types = new HashMap<Pattern, Class>();
+
 	static {
 		types.put(ExcelAddresses.file_pattern(), ExcelAddresses.class);
 	}
-	
+
 	/**
 	 * Factory method to create a derived object.
-	 * 
+	 *
 	 * @param filename detection of data type according to filename extension
-	 * @return  object of derived class
+	 * @return object of derived class
 	 */
 	public static AddressFile create(String filename) {
 //		for (Map.Entry<Pattern,Class> entry : types.entrySet()) {
@@ -77,7 +79,7 @@ abstract public class AddressFile {
 	}
 
 	abstract protected void readFile();
-	
+
 	abstract public void writeFile();
 
 	protected static void readCSV(String filename) {
@@ -124,5 +126,4 @@ abstract public class AddressFile {
 	public void setAdresses(List<VCard> adresses) {
 		this.addresses = adresses;
 	}
-	
 }
