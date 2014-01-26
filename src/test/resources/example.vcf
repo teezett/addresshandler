@@ -1,0 +1,18 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Gump;Forrest;;;
+TEL;TYPE=home:(404) 555-1212
+TEL;TYPE=cell:
+EMAIL:forrestgump@example.com
+ADR;TYPE=home:;A-1-4;Herta-Mansbacher-Str. 1;Darmstadt;;64289;
+PRODID:ezvcard ${version}
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+N:Cooper;Sheldon;;Dr.;
+TEL;TYPE=home:555-1234
+TEL;TYPE=cell:123-456
+EMAIL:cooper@mit.edu
+ADR;TYPE=home:;;;;;;
+PRODID:ezvcard ${version}
+END:VCARD

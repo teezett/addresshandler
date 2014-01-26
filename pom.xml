@@ -97,6 +97,18 @@
 			<version>1.5</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!--	Packaging	-->
+<!--		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-maven-plugin</artifactId>
+			<version>5.0.0-rc1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-standalone-compiler</artifactId>
+			<version>4.3.5</version>
+		</dependency>-->
 	</dependencies>
 
 	<build>
@@ -164,6 +176,30 @@
 					</programs>
 				</configuration>
 			</plugin>
+
+<!--			<plugin>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-maven-plugin</artifactId>
+				<version>5.0.0-rc1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>izpack</goal>
+						</goals>
+						<configuration>
+							<izpackBasedir>${project.build.directory}/adh</izpackBasedir>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.izpack</groupId>
+						<artifactId>izpack-standalone-compiler</artifactId>
+						<version>4.3.5</version>
+					</dependency>
+				</dependencies>
+			</plugin>-->
 
 			<!-- Create a tar file with the complete application -->
 			<!--			<plugin>
