@@ -21,13 +21,13 @@ import ezvcard.property.Birthday;
 import ezvcard.property.Email;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import jxl.write.DateFormat;
+import jxl.CellType;
+import jxl.DateCell;
 import jxl.write.DateTime;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +52,9 @@ public class ExcelAddresses extends AddressFile {
 		BIRTHDAY("Geburtstag", 10);
 		private String title;
 		private int index;
-		/** Mapping from field title to enum value. */
+		/**
+		 * Mapping from field title to enum value.
+		 */
 		public static final Map<String, Fields> TITLE2FIELD = new HashMap<String, Fields>();
 
 		static {
@@ -91,7 +93,7 @@ public class ExcelAddresses extends AddressFile {
 	final private static String SHEET_NAME = "Addresses";
 	final public static Pattern pattern = Pattern.compile(".*[.][xX][lL][sS]");
 	private Map<Fields, Integer> field2column;
-	
+
 	ExcelAddresses(String filename) {
 		super(filename);
 	}
@@ -103,9 +105,9 @@ public class ExcelAddresses extends AddressFile {
 
 	/**
 	 * Identify which fields are in the different columns.
-	 * 
-	 * @param sheet_  excel sheet
-	 * @return  mapping, in which column which address field is stored
+	 *
+	 * @param sheet_ excel sheet
+	 * @return mapping, in which column which address field is stored
 	 */
 	private Map<Fields, Integer> identifyColumns(Sheet sheet_) {
 		field2column = new EnumMap<Fields, Integer>(Fields.class);
@@ -123,68 +125,72 @@ public class ExcelAddresses extends AddressFile {
 
 	/**
 	 * Read one row of cells and convert to VCard.
-	 * 
-	 * @param cells  row of cells
-	 * @return  generated VCard
+	 *
+	 * @param cells row of cells
+	 * @return generated VCard
 	 */
 	private VCard readAddress(Cell[] cells) {
 		VCard vCard = new VCard();
 		Integer col;
 		StructuredName name = new StructuredName();
 		col = field2column.get(Fields.PREFIX);
-		if ( col != null ) {
+		if (col != null) {
 			name.addPrefix(cells[col].getContents());
 		}
 		col = field2column.get(Fields.GIVEN_NAME);
-		if ( col != null ) {
+		if (col != null) {
 			name.setGiven(cells[col].getContents());
 		}
 		col = field2column.get(Fields.FAMILY_NAME);
-		if ( col != null ) {
+		if (col != null) {
 			name.setFamily(cells[col].getContents());
 		}
 		vCard.setStructuredName(name);
 		col = field2column.get(Fields.HOME_PHONE);
-		if ( col != null ) {
+		if (col != null) {
 			vCard.addTelephoneNumber(cells[col].getContents(), TelephoneType.HOME);
 		}
 		col = field2column.get(Fields.CELL_PHONE);
-		if ( col != null ) {
+		if (col != null) {
 			vCard.addTelephoneNumber(cells[col].getContents(), TelephoneType.CELL);
 		}
 		col = field2column.get(Fields.EMAIL);
-		if ( col != null ) {
+		if (col != null) {
 			String email = cells[col].getContents();
 			vCard.addEmail(email);
 		}
 		Address address = new Address();
 		address.addType(AddressType.HOME);
 		col = field2column.get(Fields.EXT_ADDR);
-		if ( col != null ) {
+		if (col != null) {
 			String ext_addr = cells[col].getContents();
 			address.setExtendedAddress(ext_addr);
 		}
 		col = field2column.get(Fields.STREET);
-		if ( col != null ) {
+		if (col != null) {
 			String street = cells[col].getContents();
 			address.setStreetAddress(street);
 		}
 		col = field2column.get(Fields.POSTAL_CODE);
-		if ( col != null ) {
+		if (col != null) {
 			String postal_code = cells[col].getContents();
 			address.setPostalCode(postal_code);
 		}
 		col = field2column.get(Fields.CITY);
-		if ( col != null ) {
+		if (col != null) {
 			String city = cells[col].getContents();
 			address.setLocality(city);
 		}
 		vCard.addAddress(address);
-//		Date bday = DateFormat.parse("");
-//		Birthday birth = new Birthday();
+		col = field2column.get(Fields.BIRTHDAY);
+		if ( (col != null) && (cells[col].getType() == CellType.DATE) ) {
+			DateCell dCell = (DateCell) cells[col];
+			Birthday birth = new Birthday(dCell.getDate());
+			vCard.setBirthday(birth);
+		}
 		return vCard;
 	}
-	
+
 	@Override
 	protected void readFile() {
 		try {
@@ -194,14 +200,11 @@ public class ExcelAddresses extends AddressFile {
 			identifyColumns(sheet);
 			logger.info("Found excel sheet with " + sheet.getRows() + " rows");
 			addresses = new LinkedList<VCard>();
-			for ( int i = 1; i < sheet.getRows(); i++ ) {
+			for (int i = 1; i < sheet.getRows(); i++) {
 				Cell[] cells = sheet.getRow(i);
 				VCard address = readAddress(cells);
 				addresses.add(address);
 			}
-//			Cell a1 = sheet.getCell(0, 0);
-//			String cell_a1 = a1.getContents();
-//			AddressHandler.logger.info("Excel file, cell A1: " + cell_a1);
 		} catch (IOException ex) {
 			AddressHandler.logger.warn("Unable to open file: " + ex.getLocalizedMessage());
 		} catch (BiffException ex) {
@@ -223,32 +226,32 @@ public class ExcelAddresses extends AddressFile {
 
 	private void write_address_to_sheet(WritableSheet sheet_, int row_, VCard vCard_) throws WriteException {
 		List<Address> address_list = vCard_.getAddresses();
-		if ( address_list.isEmpty() ) {
+		if (address_list.isEmpty()) {
 			return;
 		}
 		Address addr = address_list.get(0);
 		String ext_addr = addr.getExtendedAddress();
-		if ( ext_addr != null ) {
+		if (ext_addr != null) {
 			Label ext_cell = new Label(Fields.EXT_ADDR.getIndex(), row_, ext_addr);
 			sheet_.addCell(ext_cell);
 		}
 		String street = addr.getStreetAddress();
-		if ( street != null ) {
+		if (street != null) {
 			Label street_cell = new Label(Fields.STREET.getIndex(), row_, street);
 			sheet_.addCell(street_cell);
 		}
 		String postal = addr.getPostalCode();
-		if ( postal != null ) {
+		if (postal != null) {
 			Label postal_cell = new Label(Fields.POSTAL_CODE.getIndex(), row_, postal);
 			sheet_.addCell(postal_cell);
 		}
 		String city = addr.getLocality();
-		if ( city != null ) {
+		if (city != null) {
 			Label city_cell = new Label(Fields.CITY.getIndex(), row_, city);
 			sheet_.addCell(city_cell);
 		}
 	}
-	
+
 	private void write_addresses_to_sheet(WritableSheet sheet) {
 		int row = 0;
 		for (VCard vCard : getAdresses()) {
@@ -282,7 +285,14 @@ public class ExcelAddresses extends AddressFile {
 				write_address_to_sheet(sheet, row, vCard);
 				Birthday birth = vCard.getBirthday();
 				DateTime birth_cell = new DateTime(Fields.BIRTHDAY.getIndex(), row, birth.getDate());
-				sheet.addCell(birth_cell);
+					sheet.addCell(birth_cell);
+//				java.text.DateFormat formatter = new SimpleDateFormat("dd.MM.yy");
+//				try {
+//					java.util.Date date = formatter.parse("03.10.2013");
+//					DateTime birth_cell = new DateTime(Fields.BIRTHDAY.getIndex(), row, date);
+//					sheet.addCell(birth_cell);
+//				} catch (ParseException ex) {
+//				}
 			} catch (WriteException ex) {
 				logger.warn("Writing addresse to cells: " + ex.getLocalizedMessage());
 			}
