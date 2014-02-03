@@ -5,6 +5,8 @@ o: Structure Net
 l: Hamburg
 postalcode: 21033
 streetaddress: Billwiese 22
+birthmonth: 04
+birthday: 26
 
 dn: ou=Sales, dc=structure-net, dc=de
 objectclass: organizationalunit
@@ -42,4 +44,7 @@ postalcode: 21033
 streetaddress: billwiese 22
 telephonenumber: 040-7654321
 facsimiletelephonenumber: 040-7654321
+birthyear: 1929
+birthmonth: 04
+birthday: 26
 

@@ -50,8 +50,8 @@ public class ExcelAddresses extends AddressFile {
 		POSTAL_CODE("PLZ", 8),
 		CITY("Ort", 9),
 		BIRTHDAY("Geburtstag", 10);
-		private String title;
-		private int index;
+		private final String title;
+		private final int index;
 		/**
 		 * Mapping from field title to enum value.
 		 */
