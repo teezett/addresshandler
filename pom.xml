@@ -52,6 +52,11 @@
 			<artifactId>api-all</artifactId>
 			<version>1.0.0-M20</version>
 		</dependency>
+		<dependency>
+			<groupId>com.novell.ldap</groupId>
+			<artifactId>jldap</artifactId>
+			<version>4.3</version>
+		</dependency>
 		<!-- vCard files -->
 		<dependency>
 			<groupId>com.googlecode.ez-vcard</groupId>
@@ -99,7 +104,7 @@
 		</dependency>
 
 		<!--	Packaging	-->
-<!--		<dependency>
+		<!--		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-maven-plugin</artifactId>
 			<version>5.0.0-rc1</version>
@@ -177,7 +182,7 @@
 				</configuration>
 			</plugin>
 
-<!--			<plugin>
+			<!--			<plugin>
 				<groupId>org.codehaus.izpack</groupId>
 				<artifactId>izpack-maven-plugin</artifactId>
 				<version>5.0.0-rc1</version>
