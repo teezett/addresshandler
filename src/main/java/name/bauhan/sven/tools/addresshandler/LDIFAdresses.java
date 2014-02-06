@@ -21,6 +21,7 @@ import ezvcard.util.PartialDate;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -204,7 +205,17 @@ public class LDIFAdresses extends AddressFile {
 			}
 			Date date = birth.getDate();
 			if (date != null) {
-				
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(date);
+				Integer year = cal.get(Calendar.YEAR);
+				attr = new LDAPAttribute("birthyear", year.toString());
+				attrSet.add(attr);
+				Integer month = cal.get(Calendar.MONTH);
+				attr = new LDAPAttribute("birthmonth", month.toString());
+				attrSet.add(attr);
+				Integer day = cal.get(Calendar.DATE);
+				attr = new LDAPAttribute("birthday", day.toString());
+				attrSet.add(attr);
 			}
 		}
 		LDAPEntry entry = new LDAPEntry(vCard.getStructuredName().toString(), attrSet);
