@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import ezvcard.VCard;
 
 /**
- * Hello world!
+ * Simple command line address file converter.
  *
  */
 public class AddressHandler {
@@ -51,7 +51,7 @@ public class AddressHandler {
 		}
 		AddressFile adrfile = null;
 		if (cmdline.hasOption("f")) {
-			logger.info("found option -f");
+			logger.debug("found option -f");
 			String filename = cmdline.getOptionValue("f");
 			adrfile = AddressFile.create(filename);
 			adrfile.readFile();

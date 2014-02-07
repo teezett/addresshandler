@@ -146,6 +146,8 @@ public class LDIFAdresses extends AddressFile {
 		attrSet.add(attr);
 		attr = new LDAPAttribute("sn", name.getFamily());
 		attrSet.add(attr);
+		attr = new LDAPAttribute("cn", name.getFamily() + ", " + name.getGiven());
+		attrSet.add(attr);
 		List<Address> addressList = vCard.getAddresses();
 		for (Address addr : addressList) {
 			if (addr.getTypes().contains(AddressType.HOME)) {
@@ -179,7 +181,7 @@ public class LDIFAdresses extends AddressFile {
 		List<Email> emailList = vCard.getEmails();
 		for (Email email : emailList) {
 			if (email.getTypes().contains(EmailType.HOME)) {
-				attr = new LDAPAttribute("email", email.getValue());
+				attr = new LDAPAttribute("mail", email.getValue());
 				attrSet.add(attr);
 			}
 		}

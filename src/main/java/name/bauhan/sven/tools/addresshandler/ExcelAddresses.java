@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ezvcard.VCard;
 import ezvcard.parameter.AddressType;
+import ezvcard.parameter.EmailType;
 import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Address;
 import ezvcard.property.Birthday;
@@ -32,7 +33,8 @@ import jxl.write.DateTime;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
+ * Handle Excel address files.
+ * 
  * @author Sven
  */
 public class ExcelAddresses extends AddressFile {
@@ -85,8 +87,8 @@ public class ExcelAddresses extends AddressFile {
 	/**
 	 * Logger instance
 	 */
-	private static transient final Logger logger =
-					LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	private static transient final Logger logger
+					= LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	/**
 	 * Name of sheet with addresses
 	 */
@@ -130,60 +132,61 @@ public class ExcelAddresses extends AddressFile {
 	 * @return generated VCard
 	 */
 	private VCard readAddress(Cell[] cells) {
+		logger.debug("Row has " + String.valueOf(cells.length) + " entries");
 		VCard vCard = new VCard();
 		Integer col;
 		StructuredName name = new StructuredName();
 		col = field2column.get(Fields.PREFIX);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			name.addPrefix(cells[col].getContents());
 		}
 		col = field2column.get(Fields.GIVEN_NAME);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			name.setGiven(cells[col].getContents());
 		}
 		col = field2column.get(Fields.FAMILY_NAME);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			name.setFamily(cells[col].getContents());
 		}
 		vCard.setStructuredName(name);
 		col = field2column.get(Fields.HOME_PHONE);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			vCard.addTelephoneNumber(cells[col].getContents(), TelephoneType.HOME);
 		}
 		col = field2column.get(Fields.CELL_PHONE);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			vCard.addTelephoneNumber(cells[col].getContents(), TelephoneType.CELL);
 		}
 		col = field2column.get(Fields.EMAIL);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			String email = cells[col].getContents();
-			vCard.addEmail(email);
+			vCard.addEmail(email, EmailType.HOME);
 		}
 		Address address = new Address();
 		address.addType(AddressType.HOME);
 		col = field2column.get(Fields.EXT_ADDR);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			String ext_addr = cells[col].getContents();
 			address.setExtendedAddress(ext_addr);
 		}
 		col = field2column.get(Fields.STREET);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			String street = cells[col].getContents();
 			address.setStreetAddress(street);
 		}
 		col = field2column.get(Fields.POSTAL_CODE);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			String postal_code = cells[col].getContents();
 			address.setPostalCode(postal_code);
 		}
 		col = field2column.get(Fields.CITY);
-		if (col != null) {
+		if ((col != null) && (col < cells.length)) {
 			String city = cells[col].getContents();
 			address.setLocality(city);
 		}
 		vCard.addAddress(address);
 		col = field2column.get(Fields.BIRTHDAY);
-		if ( (col != null) && (cells[col].getType() == CellType.DATE) ) {
+		if ((col != null) && (col < cells.length) && (cells[col].getType() == CellType.DATE)) {
 			DateCell dCell = (DateCell) cells[col];
 			Birthday birth = new Birthday(dCell.getDate());
 			vCard.setBirthday(birth);
@@ -201,6 +204,7 @@ public class ExcelAddresses extends AddressFile {
 			logger.info("Found excel sheet with " + sheet.getRows() + " rows");
 			addresses = new LinkedList<VCard>();
 			for (int i = 1; i < sheet.getRows(); i++) {
+				logger.debug("Reading address number " + String.valueOf(i));
 				Cell[] cells = sheet.getRow(i);
 				VCard address = readAddress(cells);
 				addresses.add(address);
@@ -284,15 +288,10 @@ public class ExcelAddresses extends AddressFile {
 				sheet.addCell(emails);
 				write_address_to_sheet(sheet, row, vCard);
 				Birthday birth = vCard.getBirthday();
-				DateTime birth_cell = new DateTime(Fields.BIRTHDAY.getIndex(), row, birth.getDate());
+				if (birth != null) {
+					DateTime birth_cell = new DateTime(Fields.BIRTHDAY.getIndex(), row, birth.getDate());
 					sheet.addCell(birth_cell);
-//				java.text.DateFormat formatter = new SimpleDateFormat("dd.MM.yy");
-//				try {
-//					java.util.Date date = formatter.parse("03.10.2013");
-//					DateTime birth_cell = new DateTime(Fields.BIRTHDAY.getIndex(), row, date);
-//					sheet.addCell(birth_cell);
-//				} catch (ParseException ex) {
-//				}
+				}
 			} catch (WriteException ex) {
 				logger.warn("Writing addresse to cells: " + ex.getLocalizedMessage());
 			}
