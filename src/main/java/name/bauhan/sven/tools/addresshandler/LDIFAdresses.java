@@ -60,44 +60,44 @@ public class LDIFAdresses extends AddressFile {
 		StructuredName name = new StructuredName();
 		try {
 			Attribute attr;
-			attr = entry.get("givenName");
+			attr = entry.get(Fieldnames.GIVEN_NAME.getLdap_attribute());
 			if (attr != null) {
 				name.setGiven(attr.getString());
 			}
-			attr = entry.get("sn");
+			attr = entry.get(Fieldnames.FAMILY_NAME.getLdap_attribute());
 			if (attr != null) {
 				name.setFamily(attr.getString());
 			}
 			vCard.setStructuredName(name);
-			attr = entry.get("homePhone");
+			attr = entry.get(Fieldnames.HOME_PHONE.getLdap_attribute());
 			if (attr != null) {
 				vCard.addTelephoneNumber(attr.getString(), TelephoneType.HOME);
 			}
-			attr = entry.get("mobile");
+			attr = entry.get(Fieldnames.CELL_PHONE.getLdap_attribute());
 			if (attr != null) {
 				vCard.addTelephoneNumber(attr.getString(), TelephoneType.CELL);
 			}
-			attr = entry.get("mail");
+			attr = entry.get(Fieldnames.EMAIL.getLdap_attribute());
 			if (attr != null) {
 				vCard.addEmail(attr.getString(), EmailType.HOME);
 			}
 			Address address = new Address();
-			attr = entry.get("streetaddress");
+			attr = entry.get(Fieldnames.STREET.getLdap_attribute());
 			if (attr != null) {
 				address.setStreetAddress(attr.getString());
 			}
-			attr = entry.get("postalcode");
+			attr = entry.get(Fieldnames.POSTAL_CODE.getLdap_attribute());
 			if (attr != null) {
 				address.setPostalCode(attr.getString());
 			}
-			attr = entry.get("l");
+			attr = entry.get(Fieldnames.CITY.getLdap_attribute());
 			if (attr != null) {
 				address.setLocality(attr.getString());
 			}
 			vCard.addAddress(address);
-			Attribute birth_day = entry.get("birthday");
-			Attribute birth_month = entry.get("birthmonth");
-			Attribute birth_year = entry.get("birthyear");
+			Attribute birth_day = entry.get(Fieldnames.BIRTHDAY.getLdap_attribute());
+			Attribute birth_month = entry.get(Fieldnames.BIRTHMONTH.getLdap_attribute());
+			Attribute birth_year = entry.get(Fieldnames.BIRTHYEAR.getLdap_attribute());
 			if ((birth_day != null) && (birth_month != null)) {
 				Birthday birthday;
 				int day = Integer.parseInt(birth_day.getString());
@@ -142,9 +142,9 @@ public class LDIFAdresses extends AddressFile {
 		LDAPAttributeSet attrSet = new LDAPAttributeSet();
 		LDAPAttribute attr;
 		StructuredName name = vCard.getStructuredName();
-		attr = new LDAPAttribute("givenName", name.getGiven());
+		attr = new LDAPAttribute(Fieldnames.GIVEN_NAME.getLdap_attribute(), name.getGiven());
 		attrSet.add(attr);
-		attr = new LDAPAttribute("sn", name.getFamily());
+		attr = new LDAPAttribute(Fieldnames.FAMILY_NAME.getLdap_attribute(), name.getFamily());
 		attrSet.add(attr);
 		attr = new LDAPAttribute("cn", name.getFamily() + ", " + name.getGiven());
 		attrSet.add(attr);
@@ -153,17 +153,17 @@ public class LDIFAdresses extends AddressFile {
 			if (addr.getTypes().contains(AddressType.HOME)) {
 				String street = addr.getStreetAddress();
 				if (street != null) {
-					attr = new LDAPAttribute("streetaddress", street);
+					attr = new LDAPAttribute(Fieldnames.STREET.getLdap_attribute(), street);
 					attrSet.add(attr);
 				}
 				String postalCode = addr.getPostalCode();
 				if (postalCode != null) {
-					attr = new LDAPAttribute("postalcode", postalCode);
+					attr = new LDAPAttribute(Fieldnames.POSTAL_CODE.getLdap_attribute(), postalCode);
 					attrSet.add(attr);
 				}
 				String location = addr.getLocality();
 				if (location != null) {
-					attr = new LDAPAttribute("l", location);
+					attr = new LDAPAttribute(Fieldnames.CITY.getLdap_attribute(), location);
 					attrSet.add(attr);
 				}
 			}
@@ -171,17 +171,17 @@ public class LDIFAdresses extends AddressFile {
 		List<Telephone> phones = vCard.getTelephoneNumbers();
 		for (Telephone tel : phones) {
 			if (tel.getTypes().contains(TelephoneType.HOME)) {
-				attr = new LDAPAttribute("homePhone", tel.getText());
+				attr = new LDAPAttribute(Fieldnames.HOME_PHONE.getLdap_attribute(), tel.getText());
 				attrSet.add(attr);
 			} else if (tel.getTypes().contains(TelephoneType.CELL)) {
-				attr = new LDAPAttribute("mobile", tel.getText());
+				attr = new LDAPAttribute(Fieldnames.CELL_PHONE.getLdap_attribute(), tel.getText());
 				attrSet.add(attr);
 			}
 		}
 		List<Email> emailList = vCard.getEmails();
 		for (Email email : emailList) {
 			if (email.getTypes().contains(EmailType.HOME)) {
-				attr = new LDAPAttribute("mail", email.getValue());
+				attr = new LDAPAttribute(Fieldnames.EMAIL.getLdap_attribute(), email.getValue());
 				attrSet.add(attr);
 			}
 		}
@@ -191,17 +191,17 @@ public class LDIFAdresses extends AddressFile {
 			if (partial != null) {
 				Integer year = partial.getYear();
 				if (year != null) {
-					attr = new LDAPAttribute("birthyear", year.toString());
+					attr = new LDAPAttribute(Fieldnames.BIRTHYEAR.getLdap_attribute(), year.toString());
 					attrSet.add(attr);
 				}
 				Integer month = partial.getMonth();
 				if (month != null) {
-					attr = new LDAPAttribute("birthmonth", month.toString());
+					attr = new LDAPAttribute(Fieldnames.BIRTHMONTH.getLdap_attribute(), month.toString());
 					attrSet.add(attr);
 				}
 				Integer day = partial.getDate();
 				if (day != null) {
-					attr = new LDAPAttribute("birthday", day.toString());
+					attr = new LDAPAttribute(Fieldnames.BIRTHDAY.getLdap_attribute(), day.toString());
 					attrSet.add(attr);
 				}
 			}
@@ -210,13 +210,13 @@ public class LDIFAdresses extends AddressFile {
 				Calendar cal = new GregorianCalendar();
 				cal.setTime(date);
 				Integer year = cal.get(Calendar.YEAR);
-				attr = new LDAPAttribute("birthyear", year.toString());
+				attr = new LDAPAttribute(Fieldnames.BIRTHYEAR.getLdap_attribute(), year.toString());
 				attrSet.add(attr);
 				Integer month = cal.get(Calendar.MONTH);
-				attr = new LDAPAttribute("birthmonth", month.toString());
+				attr = new LDAPAttribute(Fieldnames.BIRTHMONTH.getLdap_attribute(), month.toString());
 				attrSet.add(attr);
 				Integer day = cal.get(Calendar.DATE);
-				attr = new LDAPAttribute("birthday", day.toString());
+				attr = new LDAPAttribute(Fieldnames.BIRTHDAY.getLdap_attribute(), day.toString());
 				attrSet.add(attr);
 			}
 		}

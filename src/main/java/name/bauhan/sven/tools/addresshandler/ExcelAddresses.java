@@ -39,51 +39,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ExcelAddresses extends AddressFile {
 
-	enum Fields {
-
-		PREFIX("Titel", 0),
-		GIVEN_NAME("Vorname", 1),
-		FAMILY_NAME("Nachname", 2),
-		HOME_PHONE("Festnetz", 3),
-		CELL_PHONE("Mobil", 4),
-		EMAIL("Email", 5),
-		EXT_ADDR("Adresszusatz", 6),
-		STREET("Straße", 7),
-		POSTAL_CODE("PLZ", 8),
-		CITY("Ort", 9),
-		BIRTHDAY("Geburtstag", 10);
-		private final String title;
-		private final int index;
-		/**
-		 * Mapping from field title to enum value.
-		 */
-		public static final Map<String, Fields> TITLE2FIELD = new HashMap<String, Fields>();
-
-		static {
-			for (Fields field : Fields.values()) {
-				TITLE2FIELD.put(field.getTitle(), field);
-			}
-		}
-
-		Fields(String name, int count) {
-			title = name;
-			index = count;
-		}
-
-		/**
-		 * @return the title
-		 */
-		public String getTitle() {
-			return title;
-		}
-
-		/**
-		 * @return the index
-		 */
-		public int getIndex() {
-			return index;
-		}
-	}
 	/**
 	 * Logger instance
 	 */
@@ -94,7 +49,7 @@ public class ExcelAddresses extends AddressFile {
 	 */
 	final private static String SHEET_NAME = "Addresses";
 	final public static Pattern pattern = Pattern.compile(".*[.][xX][lL][sS]");
-	private Map<Fields, Integer> field2column;
+	private Map<Fieldnames, Integer> field2column;
 
 	ExcelAddresses(String filename) {
 		super(filename);
@@ -111,14 +66,14 @@ public class ExcelAddresses extends AddressFile {
 	 * @param sheet_ excel sheet
 	 * @return mapping, in which column which address field is stored
 	 */
-	private Map<Fields, Integer> identifyColumns(Sheet sheet_) {
-		field2column = new EnumMap<Fields, Integer>(Fields.class);
+	private Map<Fieldnames, Integer> identifyColumns(Sheet sheet_) {
+		field2column = new EnumMap<Fieldnames, Integer>(Fieldnames.class);
 		Cell[] headers = sheet_.getRow(0);
 		for (int i = 0; i < headers.length; i++) {
 			logger.debug("Searching title " + headers[i].getContents() + " in fields");
-			Fields field = Fields.TITLE2FIELD.get(headers[i].getContents());
+			Fieldnames field = Fieldnames.TITLE2FIELD.get(headers[i].getContents());
 			if (field != null) {
-				logger.debug("Found field " + field.getTitle() + " in column " + i);
+				logger.debug("Found field " + field.getExcel() + " in column " + i);
 				field2column.put(field, i);
 			}
 		}
@@ -136,56 +91,56 @@ public class ExcelAddresses extends AddressFile {
 		VCard vCard = new VCard();
 		Integer col;
 		StructuredName name = new StructuredName();
-		col = field2column.get(Fields.PREFIX);
+		col = field2column.get(Fieldnames.PREFIX);
 		if ((col != null) && (col < cells.length)) {
 			name.addPrefix(cells[col].getContents());
 		}
-		col = field2column.get(Fields.GIVEN_NAME);
+		col = field2column.get(Fieldnames.GIVEN_NAME);
 		if ((col != null) && (col < cells.length)) {
 			name.setGiven(cells[col].getContents());
 		}
-		col = field2column.get(Fields.FAMILY_NAME);
+		col = field2column.get(Fieldnames.FAMILY_NAME);
 		if ((col != null) && (col < cells.length)) {
 			name.setFamily(cells[col].getContents());
 		}
 		vCard.setStructuredName(name);
-		col = field2column.get(Fields.HOME_PHONE);
+		col = field2column.get(Fieldnames.HOME_PHONE);
 		if ((col != null) && (col < cells.length)) {
 			vCard.addTelephoneNumber(cells[col].getContents(), TelephoneType.HOME);
 		}
-		col = field2column.get(Fields.CELL_PHONE);
+		col = field2column.get(Fieldnames.CELL_PHONE);
 		if ((col != null) && (col < cells.length)) {
 			vCard.addTelephoneNumber(cells[col].getContents(), TelephoneType.CELL);
 		}
-		col = field2column.get(Fields.EMAIL);
+		col = field2column.get(Fieldnames.EMAIL);
 		if ((col != null) && (col < cells.length)) {
 			String email = cells[col].getContents();
 			vCard.addEmail(email, EmailType.HOME);
 		}
 		Address address = new Address();
 		address.addType(AddressType.HOME);
-		col = field2column.get(Fields.EXT_ADDR);
+		col = field2column.get(Fieldnames.EXT_ADDR);
 		if ((col != null) && (col < cells.length)) {
 			String ext_addr = cells[col].getContents();
 			address.setExtendedAddress(ext_addr);
 		}
-		col = field2column.get(Fields.STREET);
+		col = field2column.get(Fieldnames.STREET);
 		if ((col != null) && (col < cells.length)) {
 			String street = cells[col].getContents();
 			address.setStreetAddress(street);
 		}
-		col = field2column.get(Fields.POSTAL_CODE);
+		col = field2column.get(Fieldnames.POSTAL_CODE);
 		if ((col != null) && (col < cells.length)) {
 			String postal_code = cells[col].getContents();
 			address.setPostalCode(postal_code);
 		}
-		col = field2column.get(Fields.CITY);
+		col = field2column.get(Fieldnames.CITY);
 		if ((col != null) && (col < cells.length)) {
 			String city = cells[col].getContents();
 			address.setLocality(city);
 		}
 		vCard.addAddress(address);
-		col = field2column.get(Fields.BIRTHDAY);
+		col = field2column.get(Fieldnames.BIRTHDAY);
 		if ((col != null) && (col < cells.length) && (cells[col].getType() == CellType.DATE)) {
 			DateCell dCell = (DateCell) cells[col];
 			Birthday birth = new Birthday(dCell.getDate());
@@ -219,8 +174,12 @@ public class ExcelAddresses extends AddressFile {
 	private WritableSheet create_sheet_with_header(WritableWorkbook book) {
 		WritableSheet sheet = book.createSheet(SHEET_NAME, 0);
 		try {
-			for (Fields field : Fields.values()) {
-				Label label = new Label(field.getIndex(), 0, field.getTitle());
+			for (Fieldnames field : Fieldnames.values()) {
+				if (field.getColumn() < 0) {
+					// skip fields that are unused in Excel
+					continue;
+				}
+				Label label = new Label(field.getColumn(), 0, field.getExcel());
 				sheet.addCell(label);
 			}
 		} catch (WriteException ex) {
@@ -236,22 +195,22 @@ public class ExcelAddresses extends AddressFile {
 		Address addr = address_list.get(0);
 		String ext_addr = addr.getExtendedAddress();
 		if (ext_addr != null) {
-			Label ext_cell = new Label(Fields.EXT_ADDR.getIndex(), row_, ext_addr);
+			Label ext_cell = new Label(Fieldnames.EXT_ADDR.getColumn(), row_, ext_addr);
 			sheet_.addCell(ext_cell);
 		}
 		String street = addr.getStreetAddress();
 		if (street != null) {
-			Label street_cell = new Label(Fields.STREET.getIndex(), row_, street);
+			Label street_cell = new Label(Fieldnames.STREET.getColumn(), row_, street);
 			sheet_.addCell(street_cell);
 		}
 		String postal = addr.getPostalCode();
 		if (postal != null) {
-			Label postal_cell = new Label(Fields.POSTAL_CODE.getIndex(), row_, postal);
+			Label postal_cell = new Label(Fieldnames.POSTAL_CODE.getColumn(), row_, postal);
 			sheet_.addCell(postal_cell);
 		}
 		String city = addr.getLocality();
 		if (city != null) {
-			Label city_cell = new Label(Fields.CITY.getIndex(), row_, city);
+			Label city_cell = new Label(Fieldnames.CITY.getColumn(), row_, city);
 			sheet_.addCell(city_cell);
 		}
 	}
@@ -263,19 +222,19 @@ public class ExcelAddresses extends AddressFile {
 				row = row + 1;
 				StructuredName name = vCard.getStructuredName();
 				List<String> prefixes = name.getPrefixes();
-				Label prefix = new Label(Fields.PREFIX.getIndex(), row, StringUtils.join(prefixes, " "));
+				Label prefix = new Label(Fieldnames.PREFIX.getColumn(), row, StringUtils.join(prefixes, " "));
 				sheet.addCell(prefix);
-				Label given_name = new Label(Fields.GIVEN_NAME.getIndex(), row, name.getGiven());
+				Label given_name = new Label(Fieldnames.GIVEN_NAME.getColumn(), row, name.getGiven());
 				sheet.addCell(given_name);
-				Label family = new Label(Fields.FAMILY_NAME.getIndex(), row, name.getFamily());
+				Label family = new Label(Fieldnames.FAMILY_NAME.getColumn(), row, name.getFamily());
 				sheet.addCell(family);
 				List<Telephone> tel_numbers = vCard.getTelephoneNumbers();
 				for (Telephone tel : tel_numbers) {
 					if (tel.getTypes().contains(TelephoneType.HOME)) {
-						Label phone = new Label(Fields.HOME_PHONE.getIndex(), row, tel.getText());
+						Label phone = new Label(Fieldnames.HOME_PHONE.getColumn(), row, tel.getText());
 						sheet.addCell(phone);
 					} else if (tel.getTypes().contains(TelephoneType.CELL)) {
-						Label phone = new Label(Fields.CELL_PHONE.getIndex(), row, tel.getText());
+						Label phone = new Label(Fieldnames.CELL_PHONE.getColumn(), row, tel.getText());
 						sheet.addCell(phone);
 					}
 				}
@@ -284,12 +243,12 @@ public class ExcelAddresses extends AddressFile {
 				for (Email email : email_addresses) {
 					email_strings.add(email.getValue());
 				}
-				Label emails = new Label(Fields.EMAIL.getIndex(), row, StringUtils.join(email_strings, "\n"));
+				Label emails = new Label(Fieldnames.EMAIL.getColumn(), row, StringUtils.join(email_strings, "\n"));
 				sheet.addCell(emails);
 				write_address_to_sheet(sheet, row, vCard);
 				Birthday birth = vCard.getBirthday();
 				if (birth != null) {
-					DateTime birth_cell = new DateTime(Fields.BIRTHDAY.getIndex(), row, birth.getDate());
+					DateTime birth_cell = new DateTime(Fieldnames.BIRTHDAY.getColumn(), row, birth.getDate());
 					sheet.addCell(birth_cell);
 				}
 			} catch (WriteException ex) {
