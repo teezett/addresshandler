@@ -1,11 +1,6 @@
 package name.bauhan.sven.tools.addresshandler;
 
-import com.csvreader.CsvReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+//import com.csvreader.CsvReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,23 +77,23 @@ abstract public class AddressFile {
 
 	abstract public void writeFile();
 
-	protected static void readCSV(String filename) {
-		Path path = Paths.get(filename);
-		try {
-			String type = Files.probeContentType(path);
-			AddressHandler.logger.info("Detected type: " + type);
-			CsvReader reader = new CsvReader(filename);
-			reader.readHeaders();
-			while (reader.readRecord()) {
-				String uid = reader.get("uid");
-			}
-			AddressHandler.logger.info("Got CSV file with " + reader.getHeaderCount() + " header fields");
-		} catch (FileNotFoundException ex) {
-			AddressHandler.logger.warn("File not found: " + ex.getLocalizedMessage());
-		} catch (IOException ex) {
-			AddressHandler.logger.warn("Unable to get content type: " + ex.getLocalizedMessage());
-		}
-	}
+//	protected static void readCSV(String filename) {
+//		Path path = Paths.get(filename);
+//		try {
+//			String type = Files.probeContentType(path);
+//			AddressHandler.logger.info("Detected type: " + type);
+//			CsvReader reader = new CsvReader(filename);
+//			reader.readHeaders();
+//			while (reader.readRecord()) {
+//				String uid = reader.get("uid");
+//			}
+//			AddressHandler.logger.info("Got CSV file with " + reader.getHeaderCount() + " header fields");
+//		} catch (FileNotFoundException ex) {
+//			AddressHandler.logger.warn("File not found: " + ex.getLocalizedMessage());
+//		} catch (IOException ex) {
+//			AddressHandler.logger.warn("Unable to get content type: " + ex.getLocalizedMessage());
+//		}
+//	}
 
 	protected static void readLdif(String filename) {
 //		LdifReader reader = new LdifReader();

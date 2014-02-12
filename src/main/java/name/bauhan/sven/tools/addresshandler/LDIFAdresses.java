@@ -2,10 +2,14 @@ package name.bauhan.sven.tools.addresshandler;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
+import com.novell.ldap.LDAPControl;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPLocalException;
+import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.util.LDAPWriter;
 import com.novell.ldap.util.LDIFWriter;
+import com.novell.ldap.util.LDIFReader;
 import java.util.List;
 import java.util.regex.Pattern;
 import ezvcard.VCard;
@@ -18,14 +22,21 @@ import ezvcard.property.Birthday;
 import ezvcard.property.Email;
 import ezvcard.property.StructuredName;
 import ezvcard.util.PartialDate;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.logging.Level;
 import org.apache.directory.api.ldap.model.entry.Attribute;
+import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.ldif.LdapLdifException;
 import org.apache.directory.api.ldap.model.ldif.LdifEntry;
@@ -124,16 +135,34 @@ public class LDIFAdresses extends AddressFile {
 	@Override
 	protected void readFile() {
 		addresses = new LinkedList<VCard>();
+//		try {
+//			FileInputStream is = new FileInputStream(file_name);
+//			LDIFReader reader = new LDIFReader(is);
+//			LDAPMessage message = reader.readMessage();
+//			LDAPControl[] controls = message.getControls();
+//			for (LDAPControl control : controls) {
+//			}
+//			is.close();
+//		} catch (IOException ex) {
+//		} catch (LDAPLocalException ex) {
+//		} catch (LDAPException ex) {
+//		}
 		LdifReader reader = new LdifReader();
 		try {
-			List<LdifEntry> entries = reader.parseLdifFile(file_name);
+			FileInputStream is = new FileInputStream(file_name);
+			BufferedReader buf_read = new BufferedReader(new InputStreamReader(is, "URF-8"));
+			List<LdifEntry> entries = reader.parseLdif(buf_read);
 			for (LdifEntry entry : entries) {
-				String name = entry.getDn().getName();
-				AddressHandler.logger.info("Name: " + name);
 				VCard vCard = readEntry(entry);
 				addresses.add(vCard);
 			}
 		} catch (LdapLdifException ex) {
+			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
+		} catch (FileNotFoundException ex) {
+			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
+		} catch (UnsupportedEncodingException ex) {
+			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
+		} catch (LdapException ex) {
 			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
 		}
 	}

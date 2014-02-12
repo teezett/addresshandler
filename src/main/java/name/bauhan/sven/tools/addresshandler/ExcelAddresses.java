@@ -22,6 +22,8 @@ import ezvcard.property.Birthday;
 import ezvcard.property.Email;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -152,7 +154,9 @@ public class ExcelAddresses extends AddressFile {
 	@Override
 	protected void readFile() {
 		try {
-			Workbook workbook = Workbook.getWorkbook(new File(file_name));
+			FileInputStream is = new FileInputStream(file_name);
+			Workbook workbook = Workbook.getWorkbook(is);
+//			Workbook workbook = Workbook.getWorkbook(new File(file_name));
 //			Sheet sheet = workbook.getSheet(SHEET_NAME);
 			Sheet sheet = workbook.getSheet(0);
 			identifyColumns(sheet);
@@ -260,7 +264,9 @@ public class ExcelAddresses extends AddressFile {
 	@Override
 	public void writeFile() {
 		try {
-			WritableWorkbook book = Workbook.createWorkbook(new File(file_name));
+			FileOutputStream os = new FileOutputStream(file_name);
+			WritableWorkbook book = Workbook.createWorkbook(os);
+//			WritableWorkbook book = Workbook.createWorkbook(new File(file_name));
 			WritableSheet sheet = create_sheet_with_header(book);
 			write_addresses_to_sheet(sheet);
 			book.write();
