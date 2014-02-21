@@ -150,7 +150,7 @@ public class LDIFAdresses extends AddressFile {
 		LdifReader reader = new LdifReader();
 		try {
 			FileInputStream is = new FileInputStream(file_name);
-			BufferedReader buf_read = new BufferedReader(new InputStreamReader(is, "URF-8"));
+			BufferedReader buf_read = new BufferedReader(new InputStreamReader(is));
 			List<LdifEntry> entries = reader.parseLdif(buf_read);
 			for (LdifEntry entry : entries) {
 				VCard vCard = readEntry(entry);
@@ -159,8 +159,6 @@ public class LDIFAdresses extends AddressFile {
 		} catch (LdapLdifException ex) {
 			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
 		} catch (FileNotFoundException ex) {
-			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
-		} catch (UnsupportedEncodingException ex) {
 			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
 		} catch (LdapException ex) {
 			logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());

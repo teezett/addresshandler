@@ -1,6 +1,5 @@
 package name.bauhan.sven.tools.addresshandler;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
 import jxl.Cell;
@@ -25,7 +24,6 @@ import ezvcard.property.Telephone;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Handle Excel address files.
- * 
+ *
  * @author Sven
  */
 public class ExcelAddresses extends AddressFile {
@@ -225,13 +223,15 @@ public class ExcelAddresses extends AddressFile {
 			try {
 				row = row + 1;
 				StructuredName name = vCard.getStructuredName();
-				List<String> prefixes = name.getPrefixes();
-				Label prefix = new Label(Fieldnames.PREFIX.getColumn(), row, StringUtils.join(prefixes, " "));
-				sheet.addCell(prefix);
-				Label given_name = new Label(Fieldnames.GIVEN_NAME.getColumn(), row, name.getGiven());
-				sheet.addCell(given_name);
-				Label family = new Label(Fieldnames.FAMILY_NAME.getColumn(), row, name.getFamily());
-				sheet.addCell(family);
+				if (name != null) {
+					List<String> prefixes = name.getPrefixes();
+					Label prefix = new Label(Fieldnames.PREFIX.getColumn(), row, StringUtils.join(prefixes, " "));
+					sheet.addCell(prefix);
+					Label given_name = new Label(Fieldnames.GIVEN_NAME.getColumn(), row, name.getGiven());
+					sheet.addCell(given_name);
+					Label family = new Label(Fieldnames.FAMILY_NAME.getColumn(), row, name.getFamily());
+					sheet.addCell(family);
+				}
 				List<Telephone> tel_numbers = vCard.getTelephoneNumbers();
 				for (Telephone tel : tel_numbers) {
 					if (tel.getTypes().contains(TelephoneType.HOME)) {
