@@ -150,7 +150,7 @@ public class ExcelAddresses extends AddressFile {
 	}
 
 	@Override
-	protected void readFile() {
+	public void readFile() {
 		try {
 			FileInputStream is = new FileInputStream(file_name);
 			Workbook workbook = Workbook.getWorkbook(is);

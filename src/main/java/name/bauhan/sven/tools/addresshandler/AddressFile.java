@@ -73,7 +73,7 @@ abstract public class AddressFile {
 		file_name = filename;
 	}
 
-	abstract protected void readFile();
+	abstract public void readFile();
 
 	abstract public void writeFile();
 

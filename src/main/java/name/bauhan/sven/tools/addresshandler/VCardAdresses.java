@@ -35,7 +35,7 @@ public class VCardAdresses extends AddressFile {
 	 * Reading a vCard file.
 	 */
 	@Override
-	protected void readFile() {
+	public void readFile() {
 		try {
 			List<VCard> addr = Ezvcard.parse(new File(file_name)).all();
 			setAdresses(addr);

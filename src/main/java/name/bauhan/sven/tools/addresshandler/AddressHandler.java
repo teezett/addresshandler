@@ -1,5 +1,7 @@
 package name.bauhan.sven.tools.addresshandler;
 
+import javafx.application.Application;
+import static javafx.application.Application.launch;
 import java.util.List;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -12,12 +14,16 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ezvcard.VCard;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  * Simple command line address file converter.
  *
  */
-public class AddressHandler {
+public class AddressHandler extends Application {
 
 	protected static final Logger logger = LoggerFactory.getLogger(AddressHandler.class);
 
@@ -70,13 +76,26 @@ public class AddressHandler {
 
 	public static void main(String[] args) {
 		// create the parser
-		CommandLineParser parser = new BasicParser();
-		try {
-			CommandLine line = parser.parse(defineOptions(), args);
-			start(line);
-		} catch (ParseException ex) {
-			logger.error("Parse Error: " + ex.getLocalizedMessage());
-			System.exit(1);
-		}
+		launch(args);
+//		CommandLineParser parser = new BasicParser();
+//		try {
+//			CommandLine line = parser.parse(defineOptions(), args);
+//			start(line);
+//		} catch (ParseException ex) {
+//			logger.error("Parse Error: " + ex.getLocalizedMessage());
+//			System.exit(1);
+//		}
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainWindow.fxml"));
+		Scene scene = new Scene(root);
+
+		scene.getStylesheets().add("/styles/mainwindow.css");
+
+		primaryStage.setTitle("Address Handler");
+		primaryStage.setScene(scene);
+		primaryStage.show();
 	}
 }

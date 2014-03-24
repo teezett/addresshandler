@@ -133,7 +133,7 @@ public class LDIFAdresses extends AddressFile {
 	 * Reading an LDIF file.
 	 */
 	@Override
-	protected void readFile() {
+	public void readFile() {
 		addresses = new LinkedList<VCard>();
 //		try {
 //			FileInputStream is = new FileInputStream(file_name);
