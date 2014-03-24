@@ -1,17 +1,21 @@
 package name.bauhan.sven.tools.addresshandler;
 
 import ezvcard.VCard;
+import ezvcard.property.StructuredName;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * FXML Controller class
@@ -33,6 +37,8 @@ public class MainWindowController implements Initializable {
 	Label leftStatus;
 	@FXML
 	Label rightStatus;
+	@FXML
+	ListView addrList;
 	
 	/**
 	 * Initializes the controller class.
@@ -42,11 +48,7 @@ public class MainWindowController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		closeMenu.setDisable(true);
-		saveMenu.setDisable(true);
-		saveAsMenu.setDisable(true);
-		leftStatus.setText("Initialized.");
-		rightStatus.setText("<empty>");
+		dataChanged("Initialized.", "<empty>");
 	}
 
 	@FXML
@@ -55,11 +57,7 @@ public class MainWindowController implements Initializable {
 		if (readFile != null) {
 			addr_file = AddressFile.create(readFile.getAbsolutePath());
 			addr_file.readFile();
-			closeMenu.setDisable(false);
-			saveMenu.setDisable(false);
-			saveAsMenu.setDisable(false);
-			leftStatus.setText("Opened File.");
-			rightStatus.setText(readFile.getName());
+			dataChanged("Opened file.", readFile.getName());
 		}
 	}
 
@@ -67,18 +65,14 @@ public class MainWindowController implements Initializable {
 	private void handleCloseAction(ActionEvent event) {
 		addr_file = null;
 		System.gc();
-		closeMenu.setDisable(true);
-		saveMenu.setDisable(true);
-		saveAsMenu.setDisable(true);
-		leftStatus.setText("Closed file.");
-		rightStatus.setText("<empty>");
+		dataChanged("Closed file.", "<empty>");
 	}
 
 	@FXML
 	private void handleSaveAction(ActionEvent event) {
 		if (addr_file != null) {
 			addr_file.writeFile();
-			leftStatus.setText("Saved file.");
+			dataChanged("Saved file.", null);
 		}
 	}
 
@@ -90,13 +84,44 @@ public class MainWindowController implements Initializable {
 			addr_file = AddressFile.create(saveFile.getAbsolutePath());
 			addr_file.setAdresses(addresses);
 			addr_file.writeFile();
-			leftStatus.setText("Saved file.");
-			rightStatus.setText(saveFile.getName());
+			dataChanged("Saved file.", saveFile.getName());
 		}
 	}
 
 	@FXML
 	private void handleCloseRequest(ActionEvent event_) {
 		Platform.exit();
+	}
+	
+	private void dataChanged(String action_, String file_) {
+		boolean isFileOpened = (addr_file != null);
+
+		// set menu disability
+		closeMenu.setDisable(! isFileOpened);
+		saveMenu.setDisable(! isFileOpened);
+		saveAsMenu.setDisable(! isFileOpened);
+
+		// Set status line
+		leftStatus.setText(action_);
+		if (file_ != null) {
+			rightStatus.setText(file_);
+		}
+
+		// set list of addresses
+		ObservableList list = addrList.getItems();
+		list.clear();
+		if (isFileOpened) {
+			List<VCard> addresses = addr_file.getAdresses();
+			for (VCard vCard : addresses) {
+				String name_str = "<n/a>";
+				StructuredName name = vCard.getStructuredName();
+				if (name != null) {
+					List<String> prefixes = name.getPrefixes();
+					String prefix = StringUtils.join(prefixes, " ");
+					name_str = prefix + " " + name.getGiven() + " " + name.getFamily();
+				}
+				list.add( name_str );
+			}
+		}		
 	}
 }
