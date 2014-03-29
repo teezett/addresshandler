@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +16,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +30,8 @@ public class MainWindowController implements Initializable {
 
 	final FileChooser fileChooser = new FileChooser();
 	AddressFile addr_file;
-
+	List<VCard> addresses;
+	
 	@FXML
 	MenuItem closeMenu;
 	@FXML
@@ -39,6 +44,12 @@ public class MainWindowController implements Initializable {
 	Label rightStatus;
 	@FXML
 	ListView addrList;
+	@FXML
+	TextField prefixText;
+	@FXML
+	TextField givenText;
+	@FXML
+	TextField familyText;
 	
 	/**
 	 * Initializes the controller class.
@@ -49,8 +60,30 @@ public class MainWindowController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		dataChanged("Initialized.", "<empty>");
+		ObservableList extList = fileChooser.getExtensionFilters();
+		extList.add(new FileChooser.ExtensionFilter("All address formats", "*xls", "*.vcf", "*.vcard", "*.ldif"));
+		extList.add(new FileChooser.ExtensionFilter("All files", "*.*"));
+		extList.add(new FileChooser.ExtensionFilter("Excel", "*.xls"));
+		extList.add(new FileChooser.ExtensionFilter("VCard", "*.vcf", "*.vcard"));
+		extList.add(new FileChooser.ExtensionFilter("LDIF", "*.ldif"));
+		addrList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		addrList.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				showAddress(newValue);
+			}
+		});
 	}
 
+	private void showAddress(Number index_) {
+		VCard current_addr = addresses.get(index_.intValue());
+		StructuredName name = current_addr.getStructuredName();
+		List<String> prefixes = name.getPrefixes();
+		String prefix = StringUtils.join(prefixes, " ");
+		prefixText.setText(prefix);
+		givenText.setText(name.getGiven());
+		familyText.setText(name.getFamily());
+	}
+	
 	@FXML
 	private void handleOpenAction(ActionEvent event) {
 		File readFile = fileChooser.showOpenDialog(null);
@@ -80,7 +113,6 @@ public class MainWindowController implements Initializable {
 	private void handleSaveAsAction(ActionEvent event) {
 		File saveFile = fileChooser.showSaveDialog(null);
 		if (saveFile != null) {
-			List<VCard> addresses = addr_file.getAdresses();
 			addr_file = AddressFile.create(saveFile.getAbsolutePath());
 			addr_file.setAdresses(addresses);
 			addr_file.writeFile();
@@ -111,7 +143,7 @@ public class MainWindowController implements Initializable {
 		ObservableList list = addrList.getItems();
 		list.clear();
 		if (isFileOpened) {
-			List<VCard> addresses = addr_file.getAdresses();
+			addresses = addr_file.getAdresses();
 			for (VCard vCard : addresses) {
 				String name_str = "<n/a>";
 				StructuredName name = vCard.getStructuredName();
