@@ -63,15 +63,16 @@
 						<ListView fx:id="addrList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
 					</children>
 				</AnchorPane>
-				<GridPane prefHeight="534.0" prefWidth="440.0">
+				<GridPane prefHeight="305.0" prefWidth="441.0">
 					<columnConstraints>
-						<ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="198.0" minWidth="10.0" prefWidth="87.0" />
-						<ColumnConstraints hgrow="SOMETIMES" maxWidth="356.0" minWidth="10.0" prefWidth="353.0" />
+						<ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="198.0" minWidth="10.0" prefWidth="93.0" />
+						<ColumnConstraints hgrow="SOMETIMES" maxWidth="375.0" minWidth="10.0" prefWidth="348.0" />
 					</columnConstraints>
 					<rowConstraints>
-						<RowConstraints maxHeight="172.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
-						<RowConstraints maxHeight="429.0" minHeight="10.0" prefHeight="62.0" vgrow="SOMETIMES" />
-						<RowConstraints maxHeight="415.0" minHeight="10.0" prefHeight="415.0" vgrow="SOMETIMES" />
+						<RowConstraints maxHeight="172.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+						<RowConstraints maxHeight="429.0" minHeight="0.0" prefHeight="54.0" vgrow="SOMETIMES" />
+						<RowConstraints maxHeight="415.0" minHeight="0.0" prefHeight="90.0" vgrow="SOMETIMES" />
+						<RowConstraints maxHeight="483.0" minHeight="10.0" prefHeight="350.0" vgrow="SOMETIMES" />
 					</rowConstraints>
 					<children>
 						<Label text="Name:" />
@@ -88,6 +89,30 @@
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</padding>
 						</HBox>
+						<Label prefHeight="12.0" prefWidth="87.0" text="Home Phone" GridPane.rowIndex="1" />
+						<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+							<children>
+								<TextField fx:id="homePhone" prefHeight="31.0" prefWidth="118.0" promptText="home phone" />
+								<Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="21.0" prefWidth="92.0" text="Cell phone" />
+								<TextField fx:id="cellPhone" prefHeight="31.0" prefWidth="128.0" promptText="cell phone" />
+							</children>
+							<GridPane.margin>
+								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+							</GridPane.margin>
+							<padding>
+								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+							</padding>
+						</HBox>
+						<DatePicker fx:id="birthPick" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+						<Label text="Email" GridPane.rowIndex="2" />
+						<TextArea fx:id="emailText" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+							<GridPane.margin>
+								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+							</GridPane.margin>
+							<padding>
+								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+							</padding>
+						</TextArea>
 					</children>
 				</GridPane>
 				<AnchorPane>
