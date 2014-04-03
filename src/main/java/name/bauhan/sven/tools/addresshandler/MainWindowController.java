@@ -2,6 +2,8 @@ package name.bauhan.sven.tools.addresshandler;
 
 import ezvcard.VCard;
 import ezvcard.parameter.TelephoneType;
+import ezvcard.property.Address;
+import ezvcard.property.Birthday;
 import ezvcard.property.Email;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
@@ -16,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -24,6 +27,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.apache.commons.lang3.StringUtils;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * FXML Controller class
@@ -60,6 +67,16 @@ public class MainWindowController implements Initializable {
 	TextField cellPhone;
 	@FXML
 	TextArea emailText;
+	@FXML
+	TextField extAddrText;
+	@FXML
+	TextField streetText;
+	@FXML
+	TextField plzText;
+	@FXML
+	TextField cityText;
+	@FXML
+	DatePicker birthPick;
 	
 	/**
 	 * Initializes the controller class.
@@ -105,6 +122,18 @@ public class MainWindowController implements Initializable {
 		for (Email mail : email_addresses) {
 			emailText.appendText(mail.getValue() + "\n");
 		}
+		List<Address> address_list = current_addr.getAddresses();
+		if (!address_list.isEmpty()) {
+			Address addr = address_list.get(0);
+			extAddrText.setText(addr.getExtendedAddress());
+			streetText.setText(addr.getStreetAddress());
+			plzText.setText(addr.getPostalCode());
+			cityText.setText(addr.getLocality());
+		}
+		Birthday birth = current_addr.getBirthday();
+		Instant instant = Instant.ofEpochMilli(birth.getDate().getTime());
+		LocalDate res = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+		birthPick.setValue(res);
 	}
 
 	@FXML
