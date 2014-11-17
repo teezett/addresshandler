@@ -77,6 +77,7 @@ public class MainWindowController implements Initializable {
 	TextField cityText;
 	@FXML
 	DatePicker birthPick;
+	File currentPath;
 	
 	/**
 	 * Initializes the controller class.
@@ -130,19 +131,26 @@ public class MainWindowController implements Initializable {
 			plzText.setText(addr.getPostalCode());
 			cityText.setText(addr.getLocality());
 		}
+		birthPick.getEditor().clear();
 		Birthday birth = current_addr.getBirthday();
-		Instant instant = Instant.ofEpochMilli(birth.getDate().getTime());
-		LocalDate res = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
-		birthPick.setValue(res);
+		if (birth != null) {
+			Instant instant = Instant.ofEpochMilli(birth.getDate().getTime());
+			LocalDate res = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+			birthPick.setValue(res);
+		}
 	}
 
 	@FXML
 	private void handleOpenAction(ActionEvent event) {
+		if (currentPath != null) {
+			fileChooser.setInitialDirectory(currentPath);
+		}
 		File readFile = fileChooser.showOpenDialog(null);
 		if (readFile != null) {
 			addr_file = AddressFile.create(readFile.getAbsolutePath());
 			addr_file.readFile();
 			dataChanged("Opened file.", readFile.getName());
+			currentPath = readFile.getParentFile();
 		}
 	}
 
@@ -163,12 +171,16 @@ public class MainWindowController implements Initializable {
 
 	@FXML
 	private void handleSaveAsAction(ActionEvent event) {
+		if (currentPath != null) {
+			fileChooser.setInitialDirectory(currentPath);
+		}
 		File saveFile = fileChooser.showSaveDialog(null);
 		if (saveFile != null) {
 			addr_file = AddressFile.create(saveFile.getAbsolutePath());
 			addr_file.setAdresses(addresses);
 			addr_file.writeFile();
 			dataChanged("Saved file.", saveFile.getName());
+			currentPath = saveFile.getParentFile();
 		}
 	}
 
