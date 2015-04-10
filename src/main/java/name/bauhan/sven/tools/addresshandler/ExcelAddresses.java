@@ -66,9 +66,9 @@ public class ExcelAddresses extends AddressFile {
 	 * @param sheet_ excel sheet
 	 * @return mapping, in which column which address field is stored
 	 */
-	private Map<Fieldnames, Integer> identifyColumns(Sheet sheet_) {
+	private Map<Fieldnames, Integer> identifyColumns(Sheet sheet_, int row_) {
 		field2column = new EnumMap<Fieldnames, Integer>(Fieldnames.class);
-		Cell[] headers = sheet_.getRow(0);
+		Cell[] headers = sheet_.getRow(row_);
 		for (int i = 0; i < headers.length; i++) {
 			logger.debug("Searching title " + headers[i].getContents() + " in fields");
 			Fieldnames field = Fieldnames.TITLE2FIELD.get(headers[i].getContents());
@@ -80,6 +80,30 @@ public class ExcelAddresses extends AddressFile {
 		return field2column;
 	}
 
+	/**
+	 * Search for the row containing the table headers.
+	 * @param sheet_ Excel sheet to investigate
+	 * @return index of row containing the table headers
+	 */
+	private int searchTableHead(Sheet sheet_) {
+		int maxFound = 0;
+		int headerRow = -1;
+		for (int i = 0; i < sheet_.getRows(); i++) {
+			Map<Fieldnames, Integer> fields2columns = identifyColumns(sheet_, i);
+			int found = fields2columns.size();
+			if (found > maxFound) {
+				maxFound = found;
+				headerRow = i;
+			}
+		}
+		if (headerRow >= 0) {
+			logger.error("Found table headers in row " + headerRow);
+		} else {
+			logger.error("Could not find table headers in excel file!");
+		}
+		return headerRow;
+	}
+	
 	/**
 	 * Read one row of cells and convert to VCard.
 	 *
@@ -157,10 +181,11 @@ public class ExcelAddresses extends AddressFile {
 //			Workbook workbook = Workbook.getWorkbook(new File(file_name));
 //			Sheet sheet = workbook.getSheet(SHEET_NAME);
 			Sheet sheet = workbook.getSheet(0);
-			identifyColumns(sheet);
+			int headerRow = searchTableHead(sheet);
+			identifyColumns(sheet, headerRow);
 			logger.info("Found excel sheet with " + sheet.getRows() + " rows");
 			addresses = new LinkedList<VCard>();
-			for (int i = 1; i < sheet.getRows(); i++) {
+			for (int i = headerRow+1; i < sheet.getRows(); i++) {
 				logger.debug("Reading address number " + String.valueOf(i));
 				Cell[] cells = sheet.getRow(i);
 				VCard address = readAddress(cells);
