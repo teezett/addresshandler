@@ -97,7 +97,7 @@ public class ExcelAddresses extends AddressFile {
 			}
 		}
 		if (headerRow >= 0) {
-			logger.error("Found table headers in row " + headerRow);
+			logger.info("Found table headers in row " + headerRow);
 		} else {
 			logger.error("Could not find table headers in excel file!");
 		}
