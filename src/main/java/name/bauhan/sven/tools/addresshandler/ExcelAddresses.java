@@ -27,6 +27,7 @@ import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 import jxl.CellType;
 import jxl.DateCell;
 import jxl.write.DateTime;
@@ -67,27 +68,41 @@ public class ExcelAddresses extends AddressFile {
 	 * @return mapping, in which column which address field is stored
 	 */
 	private Map<Fieldnames, Integer> identifyColumns(Sheet sheet_, int row_) {
-		field2column = new EnumMap<Fieldnames, Integer>(Fieldnames.class);
+		field2column = new EnumMap<>(Fieldnames.class);
 		Cell[] headers = sheet_.getRow(row_);
-		for (int i = 0; i < headers.length; i++) {
-			logger.debug("Searching title " + headers[i].getContents() + " in fields");
-			Fieldnames field = Fieldnames.TITLE2FIELD.get(headers[i].getContents());
+		IntStream.range(0, headers.length).parallel().forEach(idx -> {
+			Fieldnames field = Fieldnames.TITLE2FIELD.get(headers[idx].getContents());
 			if (field != null) {
-				logger.debug("Found field " + field.getExcel() + " in column " + i);
-				field2column.put(field, i);
+				logger.debug("Found field " + field.getExcel() + " in column " + idx);
+				field2column.put(field, idx);
 			}
 		}
+		);
 		return field2column;
 	}
 
 	/**
 	 * Search for the row containing the table headers.
+	 *
 	 * @param sheet_ Excel sheet to investigate
 	 * @return index of row containing the table headers
 	 */
 	private int searchTableHead(Sheet sheet_) {
 		int maxFound = 0;
 		int headerRow = -1;
+//		IntStream.range(0, sheet_.getRows()).parallel()
+//						.mapToObj(idx -> {
+//							Map<Fieldnames, Integer> fields2columns = identifyColumns(sheet_, idx);
+//							return new Pair<>(idx, fields2columns.size());
+//						})
+//						.reduce(size -> {
+//							int maxSize = 0;
+//							int maxIndex = -1;
+//							if (size. > maxSize) {
+//								maxSize = size;
+//								maxIndex = idx;
+//							}
+//						});
 		for (int i = 0; i < sheet_.getRows(); i++) {
 			Map<Fieldnames, Integer> fields2columns = identifyColumns(sheet_, i);
 			int found = fields2columns.size();
@@ -103,7 +118,7 @@ public class ExcelAddresses extends AddressFile {
 		}
 		return headerRow;
 	}
-	
+
 	/**
 	 * Read one row of cells and convert to VCard.
 	 *
@@ -185,7 +200,7 @@ public class ExcelAddresses extends AddressFile {
 			identifyColumns(sheet, headerRow);
 			logger.info("Found excel sheet with " + sheet.getRows() + " rows");
 			addresses = new LinkedList<VCard>();
-			for (int i = headerRow+1; i < sheet.getRows(); i++) {
+			for (int i = headerRow + 1; i < sheet.getRows(); i++) {
 				logger.debug("Reading address number " + String.valueOf(i));
 				Cell[] cells = sheet.getRow(i);
 				VCard address = readAddress(cells);
