@@ -28,7 +28,12 @@ abstract public class AddressFile {
 	protected List<VCard> addresses = null;
 	protected String file_name;
 	private static final Map<Pattern, Class> types = new HashMap<Pattern, Class>();
+	private LoadTask loadTask;
 
+	public void setLoadTask(LoadTask loadTask) {
+		this.loadTask = loadTask;
+	}
+	
 	static {
 		types.put(ExcelAddresses.file_pattern(), ExcelAddresses.class);
 	}
