@@ -27,7 +27,8 @@ public class LoadTask extends Task<Integer> {
 		return lines;
 	}
 
-	public void update(long done) {
-		updateProgress(done, lines);
+	public void update(long done, long length) {
+		logger.debug("Load task at " + done + " of " + length);
+		updateProgress(done, length);
 	}
 }

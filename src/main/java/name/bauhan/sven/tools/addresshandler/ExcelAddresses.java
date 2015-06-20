@@ -104,6 +104,10 @@ public class ExcelAddresses extends AddressFile {
 //							}
 //						});
 		for (int i = 0; i < sheet_.getRows(); i++) {
+//			if (loadTask.isCancelled()) {
+//				break;
+//			}
+			update(i, sheet_.getRows());
 			Map<Fieldnames, Integer> fields2columns = identifyColumns(sheet_, i);
 			int found = fields2columns.size();
 			if (found > maxFound) {
@@ -193,14 +197,17 @@ public class ExcelAddresses extends AddressFile {
 		try {
 			FileInputStream is = new FileInputStream(file_name);
 			Workbook workbook = Workbook.getWorkbook(is);
-//			Workbook workbook = Workbook.getWorkbook(new File(file_name));
 //			Sheet sheet = workbook.getSheet(SHEET_NAME);
 			Sheet sheet = workbook.getSheet(0);
+			logger.info("Found excel sheet with " + sheet.getRows() + " rows");
 			int headerRow = searchTableHead(sheet);
 			identifyColumns(sheet, headerRow);
-			logger.info("Found excel sheet with " + sheet.getRows() + " rows");
-			addresses = new LinkedList<VCard>();
+			addresses = new LinkedList<>();
 			for (int i = headerRow + 1; i < sheet.getRows(); i++) {
+//				if (loadTask.isCancelled()) {
+//					break;
+//				}
+				update(i, sheet.getRows());
 				logger.debug("Reading address number " + String.valueOf(i));
 				Cell[] cells = sheet.getRow(i);
 				VCard address = readAddress(cells);

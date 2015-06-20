@@ -22,18 +22,27 @@ abstract public class AddressFile {
 		LDIF,
 		EXCEL;
 	}
-	/** Logger instance */
-	private static transient final Logger logger =
-					LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	/**
+	 * Logger instance
+	 */
+	private static transient final Logger logger
+					= LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	protected List<VCard> addresses = null;
 	protected String file_name;
-	private static final Map<Pattern, Class> types = new HashMap<Pattern, Class>();
-	private LoadTask loadTask;
+	private static final Map<Pattern, Class> types = new HashMap<>();
+	protected LoadTask loadTask;
 
 	public void setLoadTask(LoadTask loadTask) {
 		this.loadTask = loadTask;
+		logger.debug("Load task set for address file to " + loadTask);
 	}
-	
+
+	protected void update(long done, long length) {
+		if (this.loadTask != null) {
+			this.loadTask.update(done, length);
+		}
+	}
+
 	static {
 		types.put(ExcelAddresses.file_pattern(), ExcelAddresses.class);
 	}
@@ -99,20 +108,6 @@ abstract public class AddressFile {
 //			AddressHandler.logger.warn("Unable to get content type: " + ex.getLocalizedMessage());
 //		}
 //	}
-
-	protected static void readLdif(String filename) {
-//		LdifReader reader = new LdifReader();
-//		try {
-//			List<LdifEntry> entries = reader.parseLdifFile(filename);
-//			for (LdifEntry entry : entries) {
-//				String name = entry.getDn().getName();
-//				AddressHandler.logger.info("Name: " + name);
-//			}
-//		} catch (LdapLdifException ex) {
-//			AddressHandler.logger.warn("Unable to read LDIF file: " + ex.getLocalizedMessage());
-//		}
-	}
-
 	/**
 	 * @return the adresses
 	 */

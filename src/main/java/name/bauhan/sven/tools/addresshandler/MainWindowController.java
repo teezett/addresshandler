@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import javafx.beans.property.ListProperty;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -54,6 +55,7 @@ public class MainWindowController implements Initializable {
 	final FileChooser fileChooser = new FileChooser();
 	AddressFile addr_file;
 	List<VCard> addresses;
+	ListProperty<VCard> entries;
 
 	@FXML
 	MenuItem closeMenu;
@@ -114,6 +116,7 @@ public class MainWindowController implements Initializable {
 	}
 
 	private void showAddress(Number index_) {
+//		VCard current_addr = entries.get(index_.intValue());
 		VCard current_addr = addresses.get(index_.intValue());
 		StructuredName name = current_addr.getStructuredName();
 		List<String> prefixes = name.getPrefixes();
@@ -180,6 +183,7 @@ public class MainWindowController implements Initializable {
 			dialogStage.show();
 			// read the file
 			LoadTask loadTask = new LoadTask(addr_file);
+			logger.debug("new load Task " + loadTask);
 			addr_file.setLoadTask(loadTask);
 			loadTask.setOnSucceeded((WorkerStateEvent ev) -> {
 				dialogStage.close();
@@ -215,6 +219,7 @@ public class MainWindowController implements Initializable {
 		File saveFile = fileChooser.showSaveDialog(null);
 		if (saveFile != null) {
 			addr_file = AddressFile.create(saveFile.getAbsolutePath());
+//			addr_file.setAdresses(entries.get());
 			addr_file.setAdresses(addresses);
 			addr_file.writeFile();
 			dataChanged("Saved file.", saveFile.getName());
@@ -245,6 +250,7 @@ public class MainWindowController implements Initializable {
 		ObservableList list = addrList.getItems();
 		list.clear();
 		if (isFileOpened) {
+			entries.setAll(addr_file.getAdresses());
 			addresses = addr_file.getAdresses();
 			addresses.stream().map((vCard) -> {
 				String name_str = "<n/a>";
