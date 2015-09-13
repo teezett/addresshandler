@@ -31,8 +31,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -69,7 +67,7 @@ public class MainWindowController implements Initializable {
 	@FXML
 	Label rightStatus;
 	@FXML
-	ListView addrList;
+	ListView<VCard> addrList;
 	@FXML
 	TextField prefixText;
 	@FXML
@@ -114,6 +112,7 @@ public class MainWindowController implements Initializable {
 						(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
 							showAddress(newValue);
 						});
+		addrList.setCellFactory((ListView<VCard> param) -> new VCardCell());
 	}
 
 	private void showAddress(Number index_) {
@@ -251,20 +250,8 @@ public class MainWindowController implements Initializable {
 		ObservableList list = addrList.getItems();
 		list.clear();
 		if (isFileOpened) {
-//			entries.setAll(addr_file.getAdresses());
 			addresses = addr_file.getAdresses();
-			addresses.stream().map((vCard) -> {
-				String name_str = "<n/a>";
-				StructuredName name = vCard.getStructuredName();
-				if (name != null) {
-					List<String> prefixes = name.getPrefixes();
-					String prefix = StringUtils.join(prefixes, " ");
-					name_str = prefix + " " + name.getGiven() + " " + name.getFamily();
-				}
-				return name_str;
-			}).forEach((name_str) -> {
-				list.add(name_str);
-			});
+			addresses.forEach((vCard) -> list.add(vCard));
 		}
 	}
 }
