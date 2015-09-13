@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -55,7 +56,7 @@ public class MainWindowController implements Initializable {
 	final FileChooser fileChooser = new FileChooser();
 	AddressFile addr_file;
 	List<VCard> addresses;
-	ListProperty<VCard> entries;
+//	ListProperty<VCard> entries = new SimpleListProperty<>();
 
 	@FXML
 	MenuItem closeMenu;
@@ -250,7 +251,7 @@ public class MainWindowController implements Initializable {
 		ObservableList list = addrList.getItems();
 		list.clear();
 		if (isFileOpened) {
-			entries.setAll(addr_file.getAdresses());
+//			entries.setAll(addr_file.getAdresses());
 			addresses = addr_file.getAdresses();
 			addresses.stream().map((vCard) -> {
 				String name_str = "<n/a>";
