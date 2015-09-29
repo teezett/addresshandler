@@ -1,15 +1,11 @@
 package name.bauhan.sven.tools.addresshandler;
 
 import ezvcard.VCard;
-import ezvcard.parameter.TelephoneType;
-import ezvcard.property.Address;
-import ezvcard.property.Birthday;
-import ezvcard.property.Email;
-import ezvcard.property.StructuredName;
-import ezvcard.property.Telephone;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -26,16 +22,12 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import org.apache.commons.lang3.StringUtils;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import name.bauhan.sven.tools.addresshandler.viewmodel.AddressViewModel;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -54,6 +46,8 @@ public class MainWindowController implements Initializable {
 	final FileChooser fileChooser = new FileChooser();
 	AddressFile addr_file;
 	List<VCard> addresses;
+	AddressViewModel addressView = new AddressViewModel();
+//	ObjectProperty<VCard> currentAddress = new SimpleObjectProperty<>();
 //	ListProperty<VCard> entries = new SimpleListProperty<>();
 
 	@FXML
@@ -113,45 +107,34 @@ public class MainWindowController implements Initializable {
 							showAddress(newValue);
 						});
 		addrList.setCellFactory((ListView<VCard> param) -> new VCardCell());
+		// bindings
+		prefixText.textProperty().bind(addressView.prefixProperty());
+		givenText.textProperty().bind(addressView.givenNameProperty());
+		familyText.textProperty().bind(addressView.familyNameProperty());
+		homePhone.textProperty().bind(addressView.prefixProperty());
+		cellPhone.textProperty().bind(addressView.mobilePhoneProperty());
+		emailText.textProperty().bind(addressView.emailProperty());
+		extAddrText.textProperty().bind(addressView.extAddressProperty());
+		streetText.textProperty().bind(addressView.streetProperty());
+		plzText.textProperty().bind(addressView.plzProperty());
+		cityText.textProperty().bind(addressView.cityProperty());
+		// listener
+		addressView.birthdayProperty().addListener(
+						(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) -> {
+							birthPick.getEditor().clear();
+							// LocalDate.MAX means undefined
+							if (newValue != LocalDate.MAX) {
+								// as the DatePicker editor is cleared, it has to be set again
+								String birthText = newValue.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+								birthPick.getEditor().setText(birthText);
+								birthPick.setValue(newValue);
+							}
+						});
 	}
 
 	private void showAddress(Number index_) {
-//		VCard current_addr = entries.get(index_.intValue());
 		VCard current_addr = addresses.get(index_.intValue());
-		StructuredName name = current_addr.getStructuredName();
-		List<String> prefixes = name.getPrefixes();
-		String prefix = StringUtils.join(prefixes, " ");
-		prefixText.setText(prefix);
-		givenText.setText(name.getGiven());
-		familyText.setText(name.getFamily());
-		List<Telephone> tel_numbers = current_addr.getTelephoneNumbers();
-		tel_numbers.stream().forEach((tel) -> {
-			if (tel.getTypes().contains(TelephoneType.HOME)) {
-				homePhone.setText(tel.getText());
-			} else if (tel.getTypes().contains(TelephoneType.CELL)) {
-				cellPhone.setText(tel.getText());
-			}
-		});
-		emailText.clear();
-		List<Email> email_addresses = current_addr.getEmails();
-		email_addresses.stream().forEach((mail) -> {
-			emailText.appendText(mail.getValue() + "\n");
-		});
-		List<Address> address_list = current_addr.getAddresses();
-		if (!address_list.isEmpty()) {
-			Address addr = address_list.get(0);
-			extAddrText.setText(addr.getExtendedAddress());
-			streetText.setText(addr.getStreetAddress());
-			plzText.setText(addr.getPostalCode());
-			cityText.setText(addr.getLocality());
-		}
-		birthPick.getEditor().clear();
-		Birthday birth = current_addr.getBirthday();
-		if (birth != null) {
-			Instant instant = Instant.ofEpochMilli(birth.getDate().getTime());
-			LocalDate res = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
-			birthPick.setValue(res);
-		}
+		addressView.set(current_addr);
 	}
 
 	@FXML
