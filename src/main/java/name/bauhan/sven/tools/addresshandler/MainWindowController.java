@@ -4,8 +4,6 @@ import ezvcard.VCard;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -118,18 +116,7 @@ public class MainWindowController implements Initializable {
 		streetText.textProperty().bind(addressView.streetProperty());
 		plzText.textProperty().bind(addressView.plzProperty());
 		cityText.textProperty().bind(addressView.cityProperty());
-		// listener
-		addressView.birthdayProperty().addListener(
-						(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) -> {
-							birthPick.getEditor().clear();
-							// LocalDate.MAX means undefined
-							if (newValue != LocalDate.MAX) {
-								// as the DatePicker editor is cleared, it has to be set again
-								String birthText = newValue.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-								birthPick.getEditor().setText(birthText);
-								birthPick.setValue(newValue);
-							}
-						});
+		birthPick.valueProperty().bind(addressView.birthdayProperty());
 	}
 
 	private void showAddress(Number index_) {

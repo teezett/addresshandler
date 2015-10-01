@@ -49,12 +49,14 @@ public class AddressViewModel {
 	 * @param vCard given address data
 	 */
 	public void set(VCard vCard) {
+		// name
 		StructuredName name = vCard.getStructuredName();
 		List<String> prefixes = name.getPrefixes();
 		String prefixString = StringUtils.join(prefixes, " ");
 		prefix.set(prefixString);
 		givenName.set(name.getGiven());
 		familyName.set(name.getFamily());
+		// phone numbers
 		List<Telephone> tel_numbers = vCard.getTelephoneNumbers();
 		tel_numbers.stream().forEach((tel) -> {
 			if (tel.getTypes().contains(TelephoneType.HOME)) {
@@ -63,10 +65,12 @@ public class AddressViewModel {
 				mobilePhone.set(tel.getText());
 			}
 		});
+		// e-mail addresses
 		List<Email> email_addresses = vCard.getEmails();
 		String emailText = email_addresses.stream()
 						.map(mail -> mail.getValue()).reduce("", (a, b) -> a.concat(b + "\n"));
 		email.set(emailText);
+		// postal addresses
 		List<Address> address_list = vCard.getAddresses();
 		if (!address_list.isEmpty()) {
 			Address addr = address_list.get(0);
@@ -75,12 +79,14 @@ public class AddressViewModel {
 			plz.set(addr.getPostalCode());
 			city.set(addr.getLocality());
 		}
+		// birthday
 		Birthday birth = vCard.getBirthday();
-		LocalDate date = LocalDate.MAX;  // to express as undefined
 		if (birth != null) {
-			date = birth.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			LocalDate date = birth.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			birthday.set(date);
+		} else {
+			birthday.set(null);
 		}
-		birthday.set(date);
 	}
 
 	/**
