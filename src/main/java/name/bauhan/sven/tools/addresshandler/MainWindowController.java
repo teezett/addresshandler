@@ -82,7 +82,6 @@ public class MainWindowController implements Initializable {
 	TextField cityText;
 	@FXML
 	DatePicker birthPick;
-	File currentPath;
 
 	/**
 	 * Initializes the controller class.
@@ -106,6 +105,10 @@ public class MainWindowController implements Initializable {
 						});
 		addrList.setCellFactory((ListView<VCard> param) -> new VCardCell());
 		// bindings
+		if (HandlerPreferences.INSTANCE.getWorkingDir().isDirectory()) {
+			fileChooser.setInitialDirectory(HandlerPreferences.INSTANCE.getWorkingDir());
+		}
+		HandlerPreferences.INSTANCE.workingDirProperty().bind(fileChooser.initialDirectoryProperty());
 		prefixText.textProperty().bind(addressView.prefixProperty());
 		givenText.textProperty().bind(addressView.givenNameProperty());
 		familyText.textProperty().bind(addressView.familyNameProperty());
@@ -126,12 +129,6 @@ public class MainWindowController implements Initializable {
 
 	@FXML
 	private void handleOpenAction(ActionEvent event) {
-		if (null == currentPath) {
-			if (HandlerPreferences.INSTANCE.getWorkingDir().isDirectory()) {
-				currentPath = HandlerPreferences.INSTANCE.getWorkingDir();
-			}
-		}
-		fileChooser.setInitialDirectory(currentPath);
 		File readFile = fileChooser.showOpenDialog(null);
 		if (readFile != null) {
 			addr_file = AddressFile.create(readFile.getAbsolutePath());
@@ -164,9 +161,8 @@ public class MainWindowController implements Initializable {
 			});
 			Thread thread = new Thread(loadTask);
 			thread.start();
-			// update statusbar
-			currentPath = readFile.getParentFile();
-			HandlerPreferences.INSTANCE.setWorkingDir(currentPath);
+			// change working directory
+			fileChooser.setInitialDirectory(readFile.getParentFile());
 		}
 	}
 
@@ -187,9 +183,6 @@ public class MainWindowController implements Initializable {
 
 	@FXML
 	private void handleSaveAsAction(ActionEvent event) {
-		if (currentPath != null) {
-			fileChooser.setInitialDirectory(currentPath);
-		}
 		File saveFile = fileChooser.showSaveDialog(null);
 		if (saveFile != null) {
 			addr_file = AddressFile.create(saveFile.getAbsolutePath());
@@ -197,7 +190,8 @@ public class MainWindowController implements Initializable {
 			addr_file.setAdresses(addresses);
 			addr_file.writeFile();
 			dataChanged("Saved file.", saveFile.getName());
-			currentPath = saveFile.getParentFile();
+			// change working directory
+			fileChooser.setInitialDirectory(saveFile.getParentFile());
 		}
 	}
 
