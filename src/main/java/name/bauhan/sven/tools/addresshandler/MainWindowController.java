@@ -126,9 +126,12 @@ public class MainWindowController implements Initializable {
 
 	@FXML
 	private void handleOpenAction(ActionEvent event) {
-		if (currentPath != null) {
-			fileChooser.setInitialDirectory(currentPath);
+		if (null == currentPath) {
+			if (HandlerPreferences.INSTANCE.getWorkingDir().isDirectory()) {
+				currentPath = HandlerPreferences.INSTANCE.getWorkingDir();
+			}
 		}
+		fileChooser.setInitialDirectory(currentPath);
 		File readFile = fileChooser.showOpenDialog(null);
 		if (readFile != null) {
 			addr_file = AddressFile.create(readFile.getAbsolutePath());
@@ -163,6 +166,7 @@ public class MainWindowController implements Initializable {
 			thread.start();
 			// update statusbar
 			currentPath = readFile.getParentFile();
+			HandlerPreferences.INSTANCE.setWorkingDir(currentPath);
 		}
 	}
 

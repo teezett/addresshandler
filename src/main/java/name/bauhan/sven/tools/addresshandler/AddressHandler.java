@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 public class AddressHandler extends Application {
 
 	protected static final Logger logger = LoggerFactory.getLogger(AddressHandler.class);
-
+	
 	/**
 	 * Define the command line options.
 	 *
