@@ -94,7 +94,8 @@ public class AddressHandler extends Application {
 
 		scene.getStylesheets().add("/styles/mainwindow.css");
 
-		primaryStage.setTitle("Address Handler");
+		/* @todo: set version dynamically from project */
+		primaryStage.setTitle("Address Handler 0.1");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
