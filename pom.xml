@@ -3,7 +3,7 @@
 
 	<groupId>name.bauhan.sven.tools</groupId>
 	<artifactId>addresshandler</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>jar</packaging>
 
 	<name>Handler for converting address formats</name>
