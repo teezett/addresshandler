@@ -14,6 +14,9 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ezvcard.VCard;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,8 +29,10 @@ import javafx.stage.Stage;
 public class AddressHandler extends Application {
 
 	protected static final Logger logger = LoggerFactory.getLogger(AddressHandler.class);
+	final static String APP_PROP_RESSOURCE = "/application.properties";
+	Properties appProperties = new Properties();
 	
-	/**
+		/**
 	 * Define the command line options.
 	 *
 	 * @return the available command line options
@@ -74,6 +79,21 @@ public class AddressHandler extends Application {
 		}
 	}
 
+	private void load_properties() {
+		// Get application properties
+		InputStream propertiesStream = getClass().getResourceAsStream(APP_PROP_RESSOURCE);
+		logger.debug("Application property Stream: " + propertiesStream);
+		try {
+			appProperties.load(propertiesStream);
+		appProperties.stringPropertyNames().stream().forEach((key) -> {
+			String value = appProperties.getProperty(key, "");
+			logger.debug("application property: " + key + " => " + value);
+		});
+		} catch (IOException ex) {
+			logger.warn("Unable to load application properties");
+		}
+	}
+	
 	public static void main(String[] args) {
 		// create the parser
 		launch(args);
@@ -89,13 +109,15 @@ public class AddressHandler extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		load_properties();
+		
 		Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainWindow.fxml"));
 		Scene scene = new Scene(root);
 
 		scene.getStylesheets().add("/styles/mainwindow.css");
-
-		/* @todo: set version dynamically from project */
-		primaryStage.setTitle("Address Handler 0.1");
+		String version = appProperties.getProperty("application.version", "");
+		String app_name = appProperties.getProperty("application.name", "Address Handler");
+		primaryStage.setTitle(app_name + " " + version);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
