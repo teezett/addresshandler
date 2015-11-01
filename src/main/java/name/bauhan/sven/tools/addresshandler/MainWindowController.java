@@ -61,6 +61,8 @@ public class MainWindowController implements Initializable {
 	@FXML
 	ListView<VCard> addrList;
 	@FXML
+	TextField orgText;
+	@FXML
 	TextField prefixText;
 	@FXML
 	TextField givenText;
@@ -112,6 +114,7 @@ public class MainWindowController implements Initializable {
 		prefixText.textProperty().bind(addressView.prefixProperty());
 		givenText.textProperty().bind(addressView.givenNameProperty());
 		familyText.textProperty().bind(addressView.familyNameProperty());
+		orgText.textProperty().bind(addressView.orgNameProperty());
 		homePhone.textProperty().bind(addressView.prefixProperty());
 		cellPhone.textProperty().bind(addressView.mobilePhoneProperty());
 		emailText.textProperty().bind(addressView.emailProperty());

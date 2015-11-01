@@ -13,6 +13,7 @@ enum Fieldnames {
 	PREFIX("", "Titel", 0),
 	GIVEN_NAME("givenName", "Vorname", 1),
 	FAMILY_NAME("sn", "Nachname", 2),
+	ORGANIZATION("organization", "Organisation", 11),
 	HOME_PHONE("homePhone", "Festnetz", 3),
 	CELL_PHONE("mobile", "Mobil", 4),
 	EMAIL("mail", "Email", 5),

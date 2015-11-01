@@ -5,6 +5,7 @@ import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Address;
 import ezvcard.property.Birthday;
 import ezvcard.property.Email;
+import ezvcard.property.Organization;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ public class AddressViewModel {
 	private final StringProperty prefix = new SimpleStringProperty();
 	private final StringProperty givenName = new SimpleStringProperty();
 	private final StringProperty familyName = new SimpleStringProperty();
+	private final StringProperty orgName = new SimpleStringProperty();
 	private final StringProperty privatePhone = new SimpleStringProperty();
 	private final StringProperty mobilePhone = new SimpleStringProperty();
 	private final StringProperty email = new SimpleStringProperty();
@@ -56,6 +58,9 @@ public class AddressViewModel {
 		prefix.set(prefixString);
 		givenName.set(name.getGiven());
 		familyName.set(name.getFamily());
+		// organizations
+		Organization org = vCard.getOrganization();
+		orgName.set(String.join(", ", org.getValues()));
 		// phone numbers
 		List<Telephone> tel_numbers = vCard.getTelephoneNumbers();
 		tel_numbers.stream().forEach((tel) -> {
@@ -110,6 +115,13 @@ public class AddressViewModel {
 		return familyName;
 	}
 
+	/**
+	 * @return access to orgName property
+	 */
+	public StringProperty orgNameProperty() {
+		return orgName;
+	}
+	
 	/**
 	 * @return the privatePhone
 	 */

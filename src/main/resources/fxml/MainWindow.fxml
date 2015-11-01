@@ -69,6 +69,7 @@
 						<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="380.0" />
 					</columnConstraints>
 					<rowConstraints>
+<RowConstraints maxHeight="172.0" minHeight="10.0" prefHeight="56.0" vgrow="SOMETIMES" />
 						<RowConstraints maxHeight="172.0" minHeight="10.0" prefHeight="56.0" vgrow="SOMETIMES" />
 						<RowConstraints maxHeight="429.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
 						<RowConstraints maxHeight="415.0" minHeight="0.0" prefHeight="118.0" vgrow="SOMETIMES" />
@@ -77,8 +78,8 @@
 						<RowConstraints maxHeight="483.0" minHeight="10.0" prefHeight="131.0" vgrow="SOMETIMES" />
 					</rowConstraints>
 					<children>
-						<Label text="Name:" />
-						<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1">
+						<Label text="Name:" GridPane.rowIndex="1" />
+						<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
 							<children>
 								<TextField fx:id="prefixText" prefHeight="31.0" prefWidth="104.0" promptText="Prefix" />
 								<TextField fx:id="givenText" prefHeight="31.0" prefWidth="145.0" promptText="Given Name" />
@@ -91,8 +92,8 @@
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</padding>
 						</HBox>
-						<Label prefHeight="12.0" prefWidth="87.0" text="Home Phone" GridPane.rowIndex="1" />
-						<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+						<Label prefHeight="12.0" prefWidth="87.0" text="Home Phone" GridPane.rowIndex="2" />
+						<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
 							<children>
 								<TextField fx:id="homePhone" prefHeight="31.0" prefWidth="118.0" promptText="home phone" />
 								<Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="21.0" prefWidth="92.0" text="Cell phone" />
@@ -105,7 +106,7 @@
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</padding>
 						</HBox>
-						<DatePicker fx:id="birthPick" GridPane.columnIndex="1" GridPane.rowIndex="4">
+						<DatePicker fx:id="birthPick" GridPane.columnIndex="1" GridPane.rowIndex="5">
 							<GridPane.margin>
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</GridPane.margin>
@@ -113,8 +114,8 @@
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</padding>
 						</DatePicker>
-						<Label text="Email" GridPane.rowIndex="2" />
-						<TextArea fx:id="emailText" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+						<Label text="Email" GridPane.rowIndex="3" />
+						<TextArea fx:id="emailText" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
 							<GridPane.margin>
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</GridPane.margin>
@@ -122,8 +123,8 @@
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</padding>
 						</TextArea>
-						<Label text="Address" GridPane.rowIndex="3" />
-						<VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+						<Label text="Address" GridPane.rowIndex="4" />
+						<VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
 							<children>
 								<TextField fx:id="extAddrText" promptText="c/o" />
 								<TextField fx:id="streetText" promptText="Street" />
@@ -141,7 +142,10 @@
 								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 							</padding>
 						</VBox>
-						<Label text="Birthday" GridPane.rowIndex="4" />
+						<Label text="Birthday" GridPane.rowIndex="5" /><Label text="Organization:" /><TextField fx:id="orgText" promptText="Organization" GridPane.columnIndex="1">
+<GridPane.margin>
+<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+</GridPane.margin></TextField>
 					</children>
 				</GridPane>
 <!--				<AnchorPane prefHeight="544.0" prefWidth="171.0">

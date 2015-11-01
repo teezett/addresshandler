@@ -1,5 +1,6 @@
 package name.bauhan.sven.tools.addresshandler;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.IOException;
 import java.util.regex.Pattern;
 import jxl.Cell;
@@ -19,10 +20,12 @@ import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Address;
 import ezvcard.property.Birthday;
 import ezvcard.property.Email;
+import ezvcard.property.Organization;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Telephone;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,6 +150,15 @@ public class ExcelAddresses extends AddressFile {
 			name.setFamily(cells[col].getContents());
 		}
 		vCard.setStructuredName(name);
+		// organizations
+		col = field2column.get(Fieldnames.ORGANIZATION);
+		if ((col != null) && (col < cells.length)) {
+			String organizations = cells[col].getContents();
+			if (organizations != null) {
+				vCard.setOrganization(organizations.split(", "));
+			}
+		}
+		// phone numbers
 		col = field2column.get(Fieldnames.HOME_PHONE);
 		if ((col != null) && (col < cells.length)) {
 			vCard.addTelephoneNumber(cells[col].getContents(), TelephoneType.HOME);
@@ -269,6 +281,7 @@ public class ExcelAddresses extends AddressFile {
 		for (VCard vCard : getAdresses()) {
 			try {
 				row = row + 1;
+				// name
 				StructuredName name = vCard.getStructuredName();
 				if (name != null) {
 					List<String> prefixes = name.getPrefixes();
@@ -279,6 +292,14 @@ public class ExcelAddresses extends AddressFile {
 					Label family = new Label(Fieldnames.FAMILY_NAME.getColumn(), row, name.getFamily());
 					sheet.addCell(family);
 				}
+				// Organizations
+				Organization organization = vCard.getOrganization();
+				if ((organization != null) && (organization.getValues() != null) && !organization.getValues().isEmpty()) {
+					String organizations = String.join(", ", organization.getValues());
+					Label orgLabel = new Label(Fieldnames.ORGANIZATION.getColumn(), row, organizations);
+					sheet.addCell(orgLabel);
+				}
+				// phone numbers
 				List<Telephone> tel_numbers = vCard.getTelephoneNumbers();
 				for (Telephone tel : tel_numbers) {
 					if (tel.getTypes().contains(TelephoneType.HOME)) {
@@ -289,8 +310,9 @@ public class ExcelAddresses extends AddressFile {
 						sheet.addCell(phone);
 					}
 				}
+				// Email addresses
 				List<Email> email_addresses = vCard.getEmails();
-				List<String> email_strings = new LinkedList<String>();
+				List<String> email_strings = new LinkedList<>();
 				for (Email email : email_addresses) {
 					email_strings.add(email.getValue());
 				}
