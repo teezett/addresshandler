@@ -20,6 +20,7 @@ import ezvcard.property.Telephone;
 import ezvcard.property.Address;
 import ezvcard.property.Birthday;
 import ezvcard.property.Email;
+import ezvcard.property.Organization;
 import ezvcard.property.StructuredName;
 import ezvcard.util.PartialDate;
 import java.io.BufferedReader;
@@ -30,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -71,6 +74,7 @@ public class LDIFAdresses extends AddressFile {
 		StructuredName name = new StructuredName();
 		try {
 			Attribute attr;
+			// name
 			attr = entry.get(Fieldnames.GIVEN_NAME.getLdap_attribute());
 			if (attr != null) {
 				name.setGiven(attr.getString());
@@ -80,6 +84,12 @@ public class LDIFAdresses extends AddressFile {
 				name.setFamily(attr.getString());
 			}
 			vCard.setStructuredName(name);
+			// organization
+			attr = entry.get(Fieldnames.ORGANIZATION.getLdap_attribute());
+			if (attr != null) {
+				vCard.setOrganization(attr.getString().split(", "));
+			}
+			// phone
 			attr = entry.get(Fieldnames.HOME_PHONE.getLdap_attribute());
 			if (attr != null) {
 				vCard.addTelephoneNumber(attr.getString(), TelephoneType.HOME);
@@ -88,10 +98,12 @@ public class LDIFAdresses extends AddressFile {
 			if (attr != null) {
 				vCard.addTelephoneNumber(attr.getString(), TelephoneType.CELL);
 			}
+			// email
 			attr = entry.get(Fieldnames.EMAIL.getLdap_attribute());
 			if (attr != null) {
 				vCard.addEmail(attr.getString(), EmailType.HOME);
 			}
+			// adresses
 			Address address = new Address();
 			attr = entry.get(Fieldnames.STREET.getLdap_attribute());
 			if (attr != null) {
@@ -106,6 +118,7 @@ public class LDIFAdresses extends AddressFile {
 				address.setLocality(attr.getString());
 			}
 			vCard.addAddress(address);
+			// birthday
 			Attribute birth_day = entry.get(Fieldnames.BIRTHDAY.getLdap_attribute());
 			Attribute birth_month = entry.get(Fieldnames.BIRTHMONTH.getLdap_attribute());
 			Attribute birth_year = entry.get(Fieldnames.BIRTHYEAR.getLdap_attribute());
@@ -168,6 +181,7 @@ public class LDIFAdresses extends AddressFile {
 	private void writeEntry(LDAPWriter writer, VCard vCard) throws IOException, LDAPException {
 		LDAPAttributeSet attrSet = new LDAPAttributeSet();
 		LDAPAttribute attr;
+		// name
 		StructuredName name = vCard.getStructuredName();
 		attr = new LDAPAttribute(Fieldnames.GIVEN_NAME.getLdap_attribute(), name.getGiven());
 		attrSet.add(attr);
@@ -175,6 +189,14 @@ public class LDIFAdresses extends AddressFile {
 		attrSet.add(attr);
 		attr = new LDAPAttribute("cn", name.getFamily() + ", " + name.getGiven());
 		attrSet.add(attr);
+		// organization
+		Organization organization = vCard.getOrganization();
+		if ((organization != null) && (organization.getValues() != null) && !organization.getValues().isEmpty()) {
+			String organizations = String.join(", ", organization.getValues());
+			attr = new LDAPAttribute(Fieldnames.ORGANIZATION.getLdap_attribute(), organizations);
+			attrSet.add(attr);
+		}
+		// addresses
 		List<Address> addressList = vCard.getAddresses();
 		for (Address addr : addressList) {
 			if (addr.getTypes().contains(AddressType.HOME)) {
@@ -195,6 +217,7 @@ public class LDIFAdresses extends AddressFile {
 				}
 			}
 		}
+		// phones
 		List<Telephone> phones = vCard.getTelephoneNumbers();
 		for (Telephone tel : phones) {
 			if (tel.getTypes().contains(TelephoneType.HOME)) {
@@ -205,6 +228,7 @@ public class LDIFAdresses extends AddressFile {
 				attrSet.add(attr);
 			}
 		}
+		// Email
 		List<Email> emailList = vCard.getEmails();
 		for (Email email : emailList) {
 			if (email.getTypes().contains(EmailType.HOME)) {
@@ -212,6 +236,7 @@ public class LDIFAdresses extends AddressFile {
 				attrSet.add(attr);
 			}
 		}
+		// Birthday
 		Birthday birth = vCard.getBirthday();
 		if (birth != null) {
 			PartialDate partial = birth.getPartialDate();
@@ -247,7 +272,10 @@ public class LDIFAdresses extends AddressFile {
 				attrSet.add(attr);
 			}
 		}
-		LDAPEntry entry = new LDAPEntry(vCard.getStructuredName().toString(), attrSet);
+		Path path = FileSystems.getDefault().getPath(file_name);
+		String dn = "uid=" + name.getGiven() + name.getFamily() + ", ou=" + path.getFileName()
+						+ ", dc=de";
+		LDAPEntry entry = new LDAPEntry(dn, attrSet);
 		writer.writeEntry(entry);
 	}
 
