@@ -11,13 +11,13 @@
 	<fileSets>
 		<fileSet>
 			<directory>${project.build.outputDirectory}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>./</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<!-- copy the generated Main class (from javafxpackager.exe) into the 
 				.jar -->
 			<directory>${basedir}/src/main/resources</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>./</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>

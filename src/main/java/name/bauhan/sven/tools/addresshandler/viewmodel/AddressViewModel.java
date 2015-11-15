@@ -47,20 +47,30 @@ public class AddressViewModel {
 
 	/**
 	 * Set values of given address data.
-	 * 
+	 *
 	 * @param vCard given address data
 	 */
 	public void set(VCard vCard) {
 		// name
 		StructuredName name = vCard.getStructuredName();
-		List<String> prefixes = name.getPrefixes();
-		String prefixString = StringUtils.join(prefixes, " ");
-		prefix.set(prefixString);
-		givenName.set(name.getGiven());
-		familyName.set(name.getFamily());
+		if (name != null) {
+			List<String> prefixes = name.getPrefixes();
+			String prefixString = StringUtils.join(prefixes, " ");
+			prefix.set(prefixString);
+			givenName.set(name.getGiven());
+			familyName.set(name.getFamily());
+		} else {
+			prefix.set("");
+			givenName.set("");
+			familyName.set("");
+		}
 		// organizations
 		Organization org = vCard.getOrganization();
-		orgName.set(String.join(", ", org.getValues()));
+		if (org != null) {
+			orgName.set(String.join(", ", org.getValues()));
+		} else {
+			orgName.set("");
+		}
 		// phone numbers
 		List<Telephone> tel_numbers = vCard.getTelephoneNumbers();
 		tel_numbers.stream().forEach((tel) -> {
@@ -121,7 +131,7 @@ public class AddressViewModel {
 	public StringProperty orgNameProperty() {
 		return orgName;
 	}
-	
+
 	/**
 	 * @return the privatePhone
 	 */

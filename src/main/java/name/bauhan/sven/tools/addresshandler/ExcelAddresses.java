@@ -204,6 +204,24 @@ public class ExcelAddresses extends AddressFile {
 		return vCard;
 	}
 
+	/**
+	 * Check if given VCard is valid (not empty).
+	 *
+	 * @param vCard address to check
+	 * @retval false if address has no name or organization
+	 */
+	private boolean checkEntry(VCard vCard) {
+		StructuredName name = vCard.getStructuredName();
+		String nameStr = name.getGiven() + name.getFamily();
+		Organization org = vCard.getOrganization();
+		String orgStr = "";
+		if (org != null) {
+			orgStr = String.join(", ", org.getValues());
+		}
+		logger.debug("Found entry for '" + nameStr + "' in '" + orgStr + "'");
+		return !(nameStr.isEmpty() && orgStr.isEmpty());
+	}
+
 	@Override
 	public void readFile() {
 		try {
@@ -223,7 +241,9 @@ public class ExcelAddresses extends AddressFile {
 				logger.debug("Reading address number " + String.valueOf(i));
 				Cell[] cells = sheet.getRow(i);
 				VCard address = readAddress(cells);
-				addresses.add(address);
+				if (checkEntry(address)) {
+					addresses.add(address);
+				}
 			}
 		} catch (IOException ex) {
 			AddressHandler.logger.warn("Unable to open file: " + ex.getLocalizedMessage());

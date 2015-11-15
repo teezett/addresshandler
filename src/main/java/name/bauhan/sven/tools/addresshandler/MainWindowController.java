@@ -126,8 +126,13 @@ public class MainWindowController implements Initializable {
 	}
 
 	private void showAddress(Number index_) {
-		VCard current_addr = addresses.get(index_.intValue());
-		addressView.set(current_addr);
+		int index = index_.intValue();
+		if ((index < 0) || (index >= addresses.size())) {
+			addressView.set(new VCard());
+		} else {
+			VCard current_addr = addresses.get(index);
+			addressView.set(current_addr);
+		}
 	}
 
 	@FXML
